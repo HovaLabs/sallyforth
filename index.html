@@ -6,39 +6,14 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { background: #fdfbf4; display: flex; align-items: center; justify-content: center; min-height: 100vh; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
-    #__bundler_loading { position: fixed; bottom: 20px; right: 20px; font: 13px/1.4 -apple-system, BlinkMacSystemFont, sans-serif; color: #666; background: #fff; padding: 8px 14px; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.12); z-index: 10000; }
-    #__bundler_thumbnail { position: fixed; inset: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #fdfbf4; z-index: 9999; }
-    #__bundler_thumbnail svg { width: 100%; height: 100%; object-fit: contain; }
-    #__bundler_placeholder { color: #999; font-size: 14px; }
   </style>
   <noscript>
-    <style>#__bundler_loading { display: none; }</style>
     <div style="position:fixed;bottom:12px;left:12px;font:13px/1.4 -apple-system,BlinkMacSystemFont,sans-serif;color:#999;background:rgba(255,255,255,0.9);padding:6px 12px;border-radius:6px;box-shadow:0 1px 4px rgba(0,0,0,0.08);z-index:10000;">
       This page requires JavaScript to display.
     </div>
   </noscript>
 </head>
 <body>
-  <div id="__bundler_thumbnail">
-  <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
-    <rect width="1200" height="800" fill="#fdfbf4"></rect>
-    <rect x="30" y="30" width="1140" height="740" fill="none" stroke="#22355e" stroke-width="10"></rect>
-    <rect x="52" y="52" width="1096" height="696" fill="none" stroke="#22355e" stroke-width="3"></rect>
-    <g transform="translate(600,360)">
-      <g fill="#7f9fd6" stroke="#22355e" stroke-width="6">
-        <ellipse cx="0" cy="-70" rx="34" ry="46"></ellipse>
-        <ellipse cx="66" cy="-22" rx="46" ry="34" transform="rotate(72 66 -22)"></ellipse>
-        <ellipse cx="41" cy="56" rx="34" ry="46" transform="rotate(144 41 56)"></ellipse>
-        <ellipse cx="-41" cy="56" rx="34" ry="46" transform="rotate(216 -41 56)"></ellipse>
-        <ellipse cx="-66" cy="-22" rx="46" ry="34" transform="rotate(288 -66 -22)"></ellipse>
-      </g>
-      <circle r="26" fill="#e0a92e" stroke="#22355e" stroke-width="6"></circle>
-    </g>
-    <text x="600" y="620" text-anchor="middle" font-family="Georgia,serif" font-size="72" fill="#22355e">SallyForth</text>
-  </svg>
-</div>
-  <div id="__bundler_loading">Unpacking...</div>
-
   <script>
     
 document.addEventListener('DOMContentLoaded', async function() {
