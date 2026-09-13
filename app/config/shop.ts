@@ -23,13 +23,13 @@ export const BLOGS = {
     path: '/blog',
     title: 'The Blog',
     tagline: 'Stories, crafts, and garden notes from the SallyForth table.',
-    art: ['tomato', 'carrot'] as [string, string],
+    art: ['tomato', 'carrot'] as [ArtKey, ArtKey],
   },
   [SHOP.handles.almanac]: {
     path: '/bits-and-bobs-almanac',
     title: 'Bits and Bobs Almanac',
     tagline: 'Small seasonal things worth knowing: bits, bobs, and what to plant next.',
-    art: ['snail', 'radish-a'] as [string, string],
+    art: ['snail', 'radishA'] as [ArtKey, ArtKey],
   },
 } as const;
 
@@ -53,3 +53,5 @@ export const ART = {
   wordmarkScript: art('wordmark-script.svg'),
   wordmarkFooter: art('wordmark-footer.svg'),
 } as const;
+
+export type ArtKey = keyof typeof ART;
