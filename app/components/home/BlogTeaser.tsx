@@ -12,7 +12,7 @@ export function articleUrl(article: Pick<ArticleCardFragment, 'handle'>) {
 }
 
 export function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString('en-US', {month: 'long', day: 'numeric', year: 'numeric'}).toUpperCase();
+  return new Date(iso).toLocaleDateString('en-US', {month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC'}).toUpperCase();
 }
 
 export function BlogTeaser({articles}: {articles: Promise<HomeArticlesQuery | null>}) {
