@@ -38,8 +38,9 @@ export function Marquee() {
       setReps(computeMarqueeReps(window.innerWidth, unitW));
     };
     measure();
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    if (document.fonts?.ready) document.fonts.ready.then(measure).catch(() => {});
+    if (document.fonts) {
+      document.fonts.ready.then(measure).catch(() => {});
+    }
     let t: ReturnType<typeof setTimeout>;
     const onResize = () => { clearTimeout(t); t = setTimeout(measure, 200); };
     window.addEventListener('resize', onResize, {passive: true});
@@ -48,7 +49,7 @@ export function Marquee() {
 
   const copies = Array.from({length: reps * 2}, (_, i) => (
     <Unit
-      key={i} // eslint-disable-line react/no-array-index-key -- static copies, never reordered
+      key={i}
     />
   ));
   return (
