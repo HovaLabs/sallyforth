@@ -15,18 +15,7 @@ test.describe('home', () => {
 
   test('marquee is seamless: rendered sequence is at least viewport width', async ({page}) => {
     await page.goto('/');
-    // The marquee mounts with a provisional rep count (2 units) and then
-    // re-measures in an effect, settling at the rep count that covers the
-    // viewport. Wait for the unit count to stop changing across consecutive
-    // polls (rather than just >= 2) so we read the settled DOM, not the
-    // transient first render.
-    await page.waitForFunction(() => {
-      const w = window as unknown as {__sfMarqueeSeen?: number; __sfMarqueeStable?: number};
-      const current = document.querySelectorAll('.sf-marquee__unit').length;
-      w.__sfMarqueeStable = w.__sfMarqueeSeen === current ? (w.__sfMarqueeStable ?? 0) + 1 : 0;
-      w.__sfMarqueeSeen = current;
-      return current >= 2 && w.__sfMarqueeStable >= 3;
-    });
+    await page.waitForFunction(() => document.querySelectorAll('.sf-marquee__unit').length >= 4);
     const {trackWidth, viewport, units} = await page.evaluate(() => ({
       trackWidth: document.querySelector('.sf-marquee__track')!.getBoundingClientRect().width,
       viewport: window.innerWidth,
