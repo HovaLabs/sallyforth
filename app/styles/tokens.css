@@ -1,0 +1,62 @@
+/* ---- Fonts (self-hosted, extracted from the landing bundle) ---- */
+@font-face { font-family: 'Abril Fatface'; font-style: normal; font-weight: 400; font-display: swap;
+  src: url('/fonts/abril-fatface-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: 'Abril Fatface'; font-style: normal; font-weight: 400; font-display: swap;
+  src: url('/fonts/abril-fatface-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: 'Libre Caslon Text'; font-style: italic; font-weight: 400; font-display: swap;
+  src: url('/fonts/libre-caslon-text-italic-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: 'Libre Caslon Text'; font-style: italic; font-weight: 400; font-display: swap;
+  src: url('/fonts/libre-caslon-text-italic-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: 'Libre Caslon Text'; font-style: normal; font-weight: 400; font-display: swap;
+  src: url('/fonts/libre-caslon-text-regular-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: 'Libre Caslon Text'; font-style: normal; font-weight: 400; font-display: swap;
+  src: url('/fonts/libre-caslon-text-regular-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: 'Libre Caslon Text'; font-style: normal; font-weight: 700; font-display: swap;
+  src: url('/fonts/libre-caslon-text-bold-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: 'Libre Caslon Text'; font-style: normal; font-weight: 700; font-display: swap;
+  src: url('/fonts/libre-caslon-text-bold-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+
+/* ---- Brand tokens ---- */
+:root {
+  --green: rgb(36, 88, 42);
+  --red: #B30C00;
+  --rust: #C1440E;
+  --olive: #43573A;
+  --cream: #FAF9F8;
+  --paper: #FFFBEA;
+  --white: #FFFFFF;
+  --rule: #7A96C3;
+  --font-display: 'Abril Fatface', Georgia, serif;
+  --font-body: 'Libre Caslon Text', Georgia, serif;
+  --prose-size: 17px;
+  --prose-leading: 1.75;
+  --pad-x: 64px;
+}
+@media (max-width: 900px) { :root { --pad-x: 24px; } }
+
+/* ---- Base ---- */
+html, body { margin: 0; background: var(--white); color: var(--green); font-family: var(--font-body); }
+a { color: var(--green); text-decoration: none; }
+a:focus-visible, button:focus-visible, input:focus-visible { outline: 3px solid var(--green); outline-offset: 2px; }
+img { max-width: none; } /* app.css sets img{max-width:100%}; the art layers rely on fixed widths */
+
+/* ---- Utilities ---- */
+.sf-pill { display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; font-family: var(--font-body); letter-spacing: .02em; line-height: 1; cursor: pointer; border: 1px solid transparent; transition: filter .15s; }
+.sf-pill:hover { filter: brightness(1.12); }
+.sf-pill--red { background: var(--red); border-color: var(--red); color: var(--white); }
+.sf-pill--rust { background: var(--rust); border-color: var(--rust); color: var(--white); }
+.sf-pill--green { background: var(--green); border-color: var(--green); color: var(--white); }
+.sf-pill--olive { background: var(--olive); border-color: var(--olive); color: var(--white); }
+.sf-pill--outline { background: transparent; border-color: var(--green); color: var(--green); }
+.sf-eyebrow { font: 700 11px var(--font-body); letter-spacing: .3em; color: var(--green); text-transform: uppercase; }
+.sf-section-title { font: 34px var(--font-display); color: var(--green); }
+.sf-italic-link { font: italic 14px var(--font-body); color: var(--green); border-bottom: 1px solid var(--green); }
+.sf-hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
