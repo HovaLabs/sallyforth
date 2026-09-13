@@ -9,7 +9,8 @@ export const FRIENDLY_ERROR = "Hmm, that didn't take — try again in a moment."
 
 const CONSENT = {marketingState: 'SUBSCRIBED', marketingOptInLevel: 'SINGLE_OPT_IN'};
 
-const CREATE = `#graphql
+// Admin API documents — deliberately not `#graphql`-tagged so Storefront codegen ignores them.
+const CREATE = `
   mutation NewsletterCustomerCreate($input: CustomerInput!) {
     customerCreate(input: $input) {
       customer { id }
@@ -18,13 +19,13 @@ const CREATE = `#graphql
   }
 `;
 
-const FIND = `#graphql
+const FIND = `
   query NewsletterFindCustomer($q: String!) {
     customers(first: 1, query: $q) { nodes { id } }
   }
 `;
 
-const UPDATE_CONSENT = `#graphql
+const UPDATE_CONSENT = `
   mutation NewsletterConsentUpdate($input: CustomerEmailMarketingConsentUpdateInput!) {
     customerEmailMarketingConsentUpdate(input: $input) {
       customer { id }
