@@ -6,7 +6,7 @@ Shopify Hydrogen storefront (React Router 7, TypeScript, plain CSS) for SallyFor
 
 ```bash
 npm install
-npm run dev          # http://localhost:3000 (mock.shop until a store is linked)
+npm run dev          # http://localhost:3100 (mock.shop until a store is linked)
 npm test             # unit tests (Vitest)
 npm run test:e2e     # Playwright (starts the dev server)
 npm run typecheck && npm run lint
