@@ -24,6 +24,7 @@ export function AddToCartButton({
             value={JSON.stringify(analytics)}
           />
           <button
+            className="sf-card__button"
             type="submit"
             onClick={onClick}
             disabled={disabled ?? fetcher.state !== 'idle'}
