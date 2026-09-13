@@ -69,6 +69,7 @@ export async function subscribe(email: string, adminFetch: AdminFetch): Promise<
 }
 
 function fail(why: string, detail: unknown): SubscribeResult {
-  console.error(`[newsletter] ${why}:`, JSON.stringify(detail));
+  const info = detail instanceof Error ? {message: detail.message, stack: detail.stack} : detail;
+  console.error(`[newsletter] ${why}:`, JSON.stringify(info));
   return {ok: false, error: FRIENDLY_ERROR};
 }

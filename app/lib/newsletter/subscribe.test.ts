@@ -1,4 +1,4 @@
-import {describe, expect, it, vi} from 'vitest';
+import {beforeEach, describe, expect, it, vi} from 'vitest';
 import {subscribe, type AdminFetch} from '~/lib/newsletter/subscribe';
 
 function fakeAdmin(responses: Array<{data?: any; errors?: unknown}>) {
@@ -11,6 +11,9 @@ function fakeAdmin(responses: Array<{data?: any; errors?: unknown}>) {
 }
 
 describe('subscribe', () => {
+  const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+  beforeEach(() => errorSpy.mockClear());
+
   it('creates a subscribed customer tagged newsletter', async () => {
     const {fetch, calls} = fakeAdmin([
       {data: {customerCreate: {customer: {id: 'gid://shopify/Customer/1'}, userErrors: []}}},
@@ -57,6 +60,7 @@ describe('subscribe', () => {
   it('reports a friendly error when the API throws or returns errors', async () => {
     const throwing: AdminFetch = async () => { throw new Error('boom'); };
     await expect(subscribe('sally@example.com', throwing)).resolves.toMatchObject({ok: false});
+    expect(errorSpy.mock.calls.flat().join(' ')).toContain('boom');
     const {fetch} = fakeAdmin([{errors: [{message: 'unauthorized'}]}]);
     await expect(subscribe('sally@example.com', fetch)).resolves.toMatchObject({ok: false});
   });
