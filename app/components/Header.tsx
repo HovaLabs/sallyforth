@@ -3,6 +3,8 @@ import {Await, Link, NavLink, useAsyncValue} from 'react-router';
 import {type CartViewPayload, useAnalytics, useOptimisticCart} from '@shopify/hydrogen';
 import type {CartApiQueryFragment} from 'storefrontapi.generated';
 import {useAside} from '~/components/Aside';
+import {SearchForm} from '~/components/SearchForm';
+import {SEARCH_ENDPOINT} from '~/components/SearchFormPredictive';
 import {ART, NAV_LINKS, SHOP} from '~/config/shop';
 
 export function CartIcon() {
@@ -30,18 +32,29 @@ export function Header({cart}: {cart: Promise<CartApiQueryFragment | null>}) {
     <header className="sf-header">
       <div className="sf-nav">
         <Link to="/" prefetch="intent" className="sf-nav__logo" aria-label={`${SHOP.name} home`}>
-          <img src={ART.tomato} alt="" width="56" height="56" />
+          <img src={ART.logoSmall} alt="" width="56" height="56" />
         </Link>
+        {/* Search bar fills the space between the logo and the nav links (≤760px hides it; the icon below opens the search drawer instead). */}
+        <SearchForm action={SEARCH_ENDPOINT} role="search" className="sf-nav__search">
+          {({inputRef}) => (
+            <>
+              <button type="submit" className="sf-nav__search-btn" aria-label="Submit search">
+                <SearchIcon />
+              </button>
+              <input ref={inputRef} type="search" name="q" placeholder="Search" aria-label="Search" className="sf-nav__search-input" autoComplete="off" />
+            </>
+          )}
+        </SearchForm>
         <div className="sf-nav__right">
           <nav className="sf-nav__links" aria-label="Primary">
             {NAV_LINKS.map((item) => (
-              <NavLink key={item.to} to={item.to} prefetch="intent" className={`sf-pill sf-pill--${item.tone} sf-nav__pill`}>
+              <NavLink key={item.to} to={item.to} prefetch="intent" className="sf-pill sf-pill--outline sf-nav__pill">
                 {item.label}
               </NavLink>
             ))}
           </nav>
           <div className="sf-nav__icons">
-            <button type="button" className="sf-nav__icon" onClick={() => open('search')} aria-label="Search">
+            <button type="button" className="sf-nav__icon sf-nav__icon--search" onClick={() => open('search')} aria-label="Search">
               <SearchIcon />
             </button>
             <CartToggle cart={cart} />

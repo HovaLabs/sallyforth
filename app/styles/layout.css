@@ -2,27 +2,51 @@
 .sf-skip { position: absolute; left: -9999px; top: 8px; z-index: 100; background: var(--green); color: var(--white); padding: 8px 14px; border-radius: 999px; }
 .sf-skip:focus { left: 12px; }
 
-/* ---- Frame (triple green border). overflow-x: clip — not hidden — so the
+/* ---- Site frame wrapper. overflow-x: clip — not hidden — so the
    sticky header still sticks to the viewport. ---- */
-.sf-frame { padding: 10px; background: var(--white); }
-.sf-frame__outer { border: 3px solid var(--green); padding: 3px; }
-.sf-frame__inner { border: 1px solid var(--green); overflow-x: clip; position: relative; isolation: isolate; }
+.sf-frame { background: var(--white); }
+.sf-frame__inner { overflow-x: clip; position: relative; isolation: isolate; }
 
 /* ---- Header ---- */
-.sf-header { position: sticky; top: 0; z-index: 20; background: rgba(255,255,255,.86); backdrop-filter: saturate(1.2) blur(10px); -webkit-backdrop-filter: saturate(1.2) blur(10px); box-shadow: 0 1px 0 rgba(36,88,42,.18); }
-.sf-nav { display: flex; align-items: center; justify-content: space-between; padding: 10px 44px; }
+.sf-header { position: sticky; top: 0; z-index: 20; padding: 14px 24px; background: rgba(255,255,255,.72); backdrop-filter: saturate(1.2) blur(10px); -webkit-backdrop-filter: saturate(1.2) blur(10px); }
+/* Rounded floating bar: a contained card with a soft green border + drop shadow. */
+.sf-nav { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 8px 16px 8px 22px; background: var(--cream); border: 1px solid rgba(36,88,42,.16); border-radius: 26px; box-shadow: 0 10px 26px rgba(36,88,42,.10); }
+/* Home page: lift the bar out of flow so the green hero runs to the very top and
+   the bar floats over it (no white band). Other pages keep the sticky header. */
+.sf-frame__inner:has(.sf-home) > .sf-header { position: fixed; left: 0; right: 0; background: transparent; backdrop-filter: none; -webkit-backdrop-filter: none; }
 .sf-nav__logo img { height: 56px; width: auto; display: block; }
 .sf-nav__right { display: flex; align-items: center; gap: 8px; }
 .sf-nav__icons { display: flex; align-items: center; gap: 4px; }
 .sf-nav__links { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; align-items: center; }
-.sf-nav__pill { height: 36px; padding: 0 18px; font-size: 14px; }
+/* Green outline pills; fill on hover and on the current page (NavLink adds .active). */
+.sf-nav__pill { height: 36px; padding: 0 18px; font-size: 14px; transition: background .18s, color .18s; }
+.sf-nav__pill:hover, .sf-nav__pill.active { background: var(--green); color: var(--white); filter: none; text-decoration: none; }
 .sf-nav__icon { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 999px; color: var(--green); background: none; border: 0; cursor: pointer; transition: background .15s; }
 .sf-nav__icon:hover { background: rgba(36,88,42,.08); }
+.sf-nav__icon--search { display: none; } /* desktop uses the search bar; the icon returns ≤760px */
 .sf-nav__count { position: absolute; top: -2px; right: -2px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: var(--red); color: var(--white); font: 700 11px/18px var(--font-body); text-align: center; }
 .sf-burger { display: none; flex-direction: column; gap: 5px; padding: 6px; background: none; border: 0; cursor: pointer; }
 .sf-burger span { display: block; width: 24px; height: 2px; background: var(--green); }
-@media (max-width: 900px) { .sf-nav { padding-left: 24px; padding-right: 24px; } }
-@media (max-width: 760px) { .sf-nav__links { display: none; } .sf-burger { display: flex; } }
+
+/* ---- Nav search bar (matches the outline pills). Floated to the right of the
+   space between the logo and the nav links; magnifier icon sits on the left. ---- */
+.sf-nav__search { display: flex; flex: none; width: 260px; margin-left: auto; align-items: center; gap: 4px; height: 36px; padding: 0 14px 0 6px; border: 1px solid var(--green); border-radius: 999px; background: var(--white); transition: box-shadow .2s ease; }
+.sf-nav__search:focus-within { box-shadow: 0 0 0 3px rgba(36,88,42,.18); }
+.sf-nav__search-input { flex: 1; min-width: 0; margin: 0; padding: 0; border: 0; border-radius: 0; background: none; color: var(--green); font: 14px var(--font-body); appearance: none; -webkit-appearance: none; }
+.sf-nav__search-input::placeholder { color: var(--green); opacity: .6; font-style: italic; }
+.sf-nav__search-input:focus-visible { outline: none; } /* focus ring lives on the wrapper (:focus-within) */
+.sf-nav__search-input::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; } /* browser's blue ✕ clashes with the green outline */
+.sf-nav__search-btn { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border: 0; border-radius: 999px; background: none; color: var(--green); cursor: pointer; transition: background .15s; }
+.sf-nav__search-btn:hover { background: rgba(36,88,42,.08); }
+.sf-nav__search-btn svg { width: 18px; height: 18px; }
+@media (max-width: 1000px) { .sf-nav__search { width: 200px; } }
+
+@media (max-width: 900px) { .sf-header { padding-left: 14px; padding-right: 14px; } .sf-nav { padding-left: 16px; padding-right: 12px; } }
+@media (max-width: 760px) {
+  .sf-nav__links, .sf-nav__search { display: none; }
+  .sf-nav__icon--search { display: inline-flex; }
+  .sf-burger { display: flex; }
+}
 
 /* ---- Mobile menu ---- */
 .sf-menu { position: fixed; inset: 0; height: 100vh; height: 100dvh; z-index: 50; background: rgba(255,255,255,.97); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 24px; overflow: hidden; }
@@ -30,6 +54,26 @@
 .sf-menu__close { z-index: 1; position: absolute; top: 18px; right: 20px; width: 40px; height: 40px; border: 0; background: none; color: var(--green); font: 28px/1 sans-serif; cursor: pointer; }
 .sf-menu__links { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 14px; }
 .sf-menu__pill { height: 52px; padding: 0 28px; font-size: 18px; gap: 10px; }
+
+/* Open/close animation: the panel blooms out of the burger's corner (circular clip-path),
+   the art scales in, then the links fade up one after another (`--i` set inline).
+   The panel stays mounted for MENU_EXIT_MS (MobileMenu.tsx) so .sf-menu--closing can play. */
+.sf-menu { --sf-menu-origin: calc(100% - 40px) 40px; animation: sf-menu-in .45s cubic-bezier(.2, .8, .2, 1) both; }
+.sf-menu--closing { animation: sf-menu-out .26s cubic-bezier(.4, 0, 1, 1) both; pointer-events: none; }
+.sf-menu__art { animation: sf-menu-art .7s cubic-bezier(.2, .8, .2, 1) .08s both; }
+.sf-menu__close { animation: sf-menu-fade .3s ease-out .3s both; }
+.sf-menu__links > * { animation: sf-menu-item .5s cubic-bezier(.2, .8, .2, 1) both; animation-delay: calc(.2s + var(--i, 0) * 65ms); }
+.sf-menu--closing .sf-menu__art, .sf-menu--closing .sf-menu__close, .sf-menu--closing .sf-menu__links > * { animation: none; }
+@keyframes sf-menu-in   { from { clip-path: circle(0 at var(--sf-menu-origin)); opacity: .6; } to { clip-path: circle(150% at var(--sf-menu-origin)); opacity: 1; } }
+@keyframes sf-menu-out  { from { clip-path: circle(150% at var(--sf-menu-origin)); opacity: 1; } to { clip-path: circle(0 at var(--sf-menu-origin)); opacity: .4; } }
+@keyframes sf-menu-art  { from { opacity: 0; scale: .82; } to { opacity: 1; scale: 1; } } /* `scale` composes with the inline rotate transform */
+@keyframes sf-menu-item { from { opacity: 0; translate: 0 22px; } to { opacity: 1; translate: 0 0; } }
+@keyframes sf-menu-fade { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .sf-menu { animation: sf-menu-fade .15s ease-out both; }
+  .sf-menu--closing { animation: sf-menu-fade .15s ease-in reverse both; }
+  .sf-menu__art, .sf-menu__close, .sf-menu__links > * { animation: none; }
+}
 
 /* ---- Section chrome shared by home + content pages ---- */
 .pad { padding-left: var(--pad-x); padding-right: var(--pad-x); }

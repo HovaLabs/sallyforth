@@ -1,17 +1,17 @@
 /* ---- Hero ---- */
-.sf-hero { position: relative; height: calc(100vh - 80px); min-height: 560px; overflow: hidden; background: var(--green); border-bottom: 1px solid var(--green); }
+.sf-hero { position: relative; height: calc(100vh - 80px); min-height: 560px; overflow: hidden; background: var(--white); border-bottom: 1px solid var(--green); }
 .sf-hero__layer { position: absolute; pointer-events: none; will-change: transform; }
 .sf-hero__text { position: absolute; inset: 0; z-index: 3; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-.sf-hero__halo { background: radial-gradient(ellipse 52% 50% at 50% 50%, rgba(36,88,42,.9) 42%, rgba(36,88,42,.77) 62%, rgba(36,88,42,.44) 80%, rgba(36,88,42,0) 96%); padding: 110px 140px; }
-.sf-hero__eyebrow { font: 700 12px var(--font-body); letter-spacing: .34em; color: var(--white); margin-bottom: 20px; }
+.sf-hero__halo { background: radial-gradient(ellipse 52% 50% at 50% 50%, rgba(255,255,255,.9) 42%, rgba(255,255,255,.77) 62%, rgba(255,255,255,.44) 80%, rgba(255,255,255,0) 96%); padding: 110px 140px; }
+.sf-hero__eyebrow { font: 700 12px var(--font-body); letter-spacing: .34em; color: var(--green); margin-bottom: 20px; }
 .sf-hero__wordmark { width: min(820px, 82vw); margin: 0 auto; }
 .sf-hero__wordmark-inner { position: relative; }
 .sf-hero__wordmark-inner > img:first-child { display: block; width: 100%; height: auto; }
 .sf-hero__snail { position: absolute; left: 83%; bottom: calc(47% + 24px); width: 6%; pointer-events: none; }
-.sf-hero__tagline { position: absolute; left: 46%; right: 8%; top: 58%; margin: 0; text-align: center; font: italic clamp(14px, 2.6vw, 22px)/1.4 var(--font-body); color: var(--white); }
+.sf-hero__tagline { position: absolute; left: 46%; right: 8%; top: 58%; margin: 0; text-align: center; font: italic clamp(14px, 2.6vw, 22px)/1.4 var(--font-body); color: var(--green); }
 .sf-hero__ctas { display: flex; align-items: center; justify-content: center; gap: 26px; margin-top: 26px; flex-wrap: wrap; }
 .sf-hero__cta { background: var(--red); color: var(--paper); padding: 13px 26px; font: 700 13px var(--font-body); letter-spacing: .16em; border-radius: 999px; }
-.sf-hero__alt { font: italic 15px var(--font-body); color: var(--white); border-bottom: 1px solid var(--white); }
+.sf-hero__alt { font: italic 15px var(--font-body); color: var(--green); border-bottom: 1px solid var(--green); }
 @media (max-width: 900px) { .halo { padding: 60px 24px; } }
 
 /* ---- Marquee ---- */

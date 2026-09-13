@@ -51,7 +51,7 @@ export default function Collection() {
   const {products} = useLoaderData<typeof loader>();
 
   return (
-    <div className="collection">
+    <div className="collection collection--shop">
       <h1>Products</h1>
       <PaginatedResourceSection<CollectionItemFragment>
         connection={products}
