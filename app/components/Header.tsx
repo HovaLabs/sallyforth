@@ -25,9 +25,9 @@ function SearchIcon() {
 }
 
 export function Header({cart}: {cart: Promise<CartApiQueryFragment | null>}) {
-  const {open} = useAside();
+  const {open, type} = useAside();
   return (
-    <div className="sf-header">
+    <header className="sf-header">
       <div className="sf-nav">
         <Link to="/" prefetch="intent" className="sf-nav__logo" aria-label={`${SHOP.name} home`}>
           <img src={ART.tomato} alt="" width="56" height="56" />
@@ -49,11 +49,12 @@ export function Header({cart}: {cart: Promise<CartApiQueryFragment | null>}) {
           onClick={() => open('mobile')}
           aria-label="Menu"
           aria-haspopup="dialog"
+          aria-expanded={type === 'mobile'}
         >
           <span /><span /><span />
         </button>
       </div>
-    </div>
+    </header>
   );
 }
 
