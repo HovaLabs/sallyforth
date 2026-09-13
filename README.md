@@ -1,45 +1,23 @@
-# Hydrogen template: Skeleton
+# SallyForth storefront
 
-Hydrogen is Shopify’s stack for headless commerce. Hydrogen is designed to dovetail with [React Router](https://reactrouter.com/), the modern multi-strategy router for React. This template contains a **minimal setup** of components, queries and tooling to get started with Hydrogen.
+Shopify Hydrogen storefront (React Router 7, TypeScript, plain CSS) for SallyForth — art, gardens, and stories for growing families. Deploys to Oxygen.
 
-[Check out Hydrogen docs](https://shopify.dev/custom-storefronts/hydrogen)
-[Get familiar with React Router](https://reactrouter.com/start/framework/routing)
-
-## What's included
-
-- React Router
-- Hydrogen
-- Oxygen
-- Vite
-- Shopify CLI
-- ESLint
-- Prettier
-- GraphQL generator
-- TypeScript and JavaScript flavors
-- Minimal setup of components and routes
-
-## Getting started
-
-**Requirements:**
-
-- Node.js version 22.x or 24.x
+## Develop
 
 ```bash
-npm create @shopify/hydrogen@latest
+npm install
+npm run dev          # http://localhost:3000 (mock.shop until a store is linked)
+npm test             # unit tests (Vitest)
+npm run test:e2e     # Playwright (starts the dev server)
+npm run typecheck && npm run lint
 ```
 
-## Building for production
+Link a real store: see `docs/store-setup.md`. Design spec: `docs/superpowers/specs/2026-09-13-hydrogen-storefront-design.md`. The original landing page is kept at `legacy/landing-page.html`; its art and fonts were extracted into `public/` by `scripts/extract-legacy-assets.mjs`.
 
-```bash
-npm run build
-```
+## Layout of `app/`
 
-## Local development
-
-```bash
-npm run dev
-```
-
-## Setup for using Customer Account API (`/account` section)
-
-Follow step 1 and 2 of <https://shopify.dev/docs/custom-storefronts/building-with-the-customer-account-api/hydrogen#step-1-set-up-a-public-domain-for-local-development>
+- `config/shop.ts` — handles, nav, blog config, asset paths
+- `components/` — layout (Frame, Header, MobileMenu, Footer), `home/` sections, skeleton cart/search components
+- `lib/` — pure helpers (`marquee`, `parallax`), `newsletter/` (Admin API subscribe flow)
+- `routes/` — React Router flat routes; `newsletter.tsx` is a POST-only resource route
+- `styles/` — `tokens.css` (brand), `layout.css`, `home.css`, skeleton `app.css`/`reset.css`

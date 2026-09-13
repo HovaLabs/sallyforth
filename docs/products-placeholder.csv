@@ -1,0 +1,8 @@
+Handle,Title,Body (HTML),Vendor,Type,Tags,Published,Option1 Name,Option1 Value,Variant Price,Variant Requires Shipping,Variant Taxable,Variant Inventory Policy,Variant Fulfillment Service,Status
+radish-patch-print,Radish Patch Print,"<p>A hand-painted radish patch, printed on heavy matte stock.</p>",SallyForth,Print,"print,garden",TRUE,Title,Default Title,24.00,TRUE,TRUE,deny,manual,active
+sweet-pea-kit,Sweet Pea Kit,"<p>Everything a small gardener needs to grow sweet peas.</p>",SallyForth,Kit,"kit,garden",TRUE,Title,Default Title,32.00,TRUE,TRUE,deny,manual,active
+tomato-tea-towel,Tomato Tea Towel,"<p>A tomato-print tea towel for the kitchen table.</p>",SallyForth,Textile,"kitchen,tomato",TRUE,Title,Default Title,18.00,TRUE,TRUE,deny,manual,active
+beet-bandana,Beet Bandana,"<p>A beet-print cotton bandana.</p>",SallyForth,Textile,"beet",TRUE,Title,Default Title,22.00,TRUE,TRUE,deny,manual,active
+eggplant-patch,Eggplant Patch,"<p>An embroidered eggplant patch.</p>",SallyForth,Patch,"patch",TRUE,Title,Default Title,12.00,TRUE,TRUE,deny,manual,active
+blueberry-sticker-set,Blueberry Sticker Set,"<p>A set of blueberry stickers.</p>",SallyForth,Stickers,"stickers",TRUE,Title,Default Title,8.00,TRUE,TRUE,deny,manual,active
+carrot-grow-kit,Carrot Grow Kit,"<p>Grow your own carrots, from seed to table.</p>",SallyForth,Kit,"kit,carrot",TRUE,Title,Default Title,28.00,TRUE,TRUE,deny,manual,active
