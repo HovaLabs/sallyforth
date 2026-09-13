@@ -15,6 +15,7 @@ import favicon from '~/assets/favicon.svg';
 import resetStyles from '~/styles/reset.css?url';
 import appStyles from '~/styles/app.css?url';
 import tokensStyles from '~/styles/tokens.css?url';
+import layoutStyles from '~/styles/layout.css?url';
 import {PageLayout} from './components/PageLayout';
 
 export type RootLoader = typeof loader;
@@ -124,6 +125,7 @@ export function Layout({children}: {children?: React.ReactNode}) {
         <link rel="stylesheet" href={resetStyles}></link>
         <link rel="stylesheet" href={appStyles}></link>
         <link rel="stylesheet" href={tokensStyles}></link>
+        <link rel="stylesheet" href={layoutStyles}></link>
         <Meta />
         <Links />
       </head>
