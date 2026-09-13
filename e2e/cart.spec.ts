@@ -15,5 +15,6 @@ test('add a product from the carousel (or its PDP) and see it in the drawer with
   await expect(drawer).toBeVisible();
   await expect(drawer.locator('.cart-line')).toHaveCount(1, {timeout: 15_000});
   await expect(drawer.getByRole('link', {name: /checkout/i})).toHaveAttribute('href', /checkout|mock\.shop/);
+  await expect(page.locator('.sf-nav__count').first()).toBeVisible();
   await expect(page.locator('.sf-nav__count').first()).toHaveText('1');
 });

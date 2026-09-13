@@ -32,27 +32,31 @@ export function Header({cart}: {cart: Promise<CartApiQueryFragment | null>}) {
         <Link to="/" prefetch="intent" className="sf-nav__logo" aria-label={`${SHOP.name} home`}>
           <img src={ART.tomato} alt="" width="56" height="56" />
         </Link>
-        <nav className="sf-nav__links" aria-label="Primary">
-          {NAV_LINKS.map((item) => (
-            <NavLink key={item.to} to={item.to} prefetch="intent" className={`sf-pill sf-pill--${item.tone} sf-nav__pill`}>
-              {item.label}
-            </NavLink>
-          ))}
-          <button type="button" className="sf-nav__icon" onClick={() => open('search')} aria-label="Search">
-            <SearchIcon />
+        <div className="sf-nav__right">
+          <nav className="sf-nav__links" aria-label="Primary">
+            {NAV_LINKS.map((item) => (
+              <NavLink key={item.to} to={item.to} prefetch="intent" className={`sf-pill sf-pill--${item.tone} sf-nav__pill`}>
+                {item.label}
+              </NavLink>
+            ))}
+          </nav>
+          <div className="sf-nav__icons">
+            <button type="button" className="sf-nav__icon" onClick={() => open('search')} aria-label="Search">
+              <SearchIcon />
+            </button>
+            <CartToggle cart={cart} />
+          </div>
+          <button
+            type="button"
+            className="sf-burger"
+            onClick={() => open('mobile')}
+            aria-label="Menu"
+            aria-haspopup="dialog"
+            aria-expanded={type === 'mobile'}
+          >
+            <span /><span /><span />
           </button>
-          <CartToggle cart={cart} />
-        </nav>
-        <button
-          type="button"
-          className="sf-burger"
-          onClick={() => open('mobile')}
-          aria-label="Menu"
-          aria-haspopup="dialog"
-          aria-expanded={type === 'mobile'}
-        >
-          <span /><span /><span />
-        </button>
+        </div>
       </div>
     </header>
   );

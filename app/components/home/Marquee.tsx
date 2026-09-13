@@ -53,8 +53,8 @@ export function Marquee() {
     />
   ));
   return (
-    <div className="sf-marquee" aria-hidden="true">
-      <div className="sf-marquee__track" ref={track} style={{animationDuration: `${28 * reps}s`}}>
+    <div className="sf-marquee">
+      <div className="sf-marquee__track" ref={track} aria-hidden="true" style={{animationDuration: `${28 * reps}s`}}>
         {copies}
       </div>
       <p className="sr-only">Grow, make, tell.</p>
