@@ -19,7 +19,7 @@
 .sf-nav__icons { display: flex; align-items: center; gap: 4px; }
 .sf-nav__links { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; align-items: center; }
 /* Green outline pills; fill on hover and on the current page (NavLink adds .active). */
-.sf-nav__pill { height: 36px; padding: 0 18px; font-size: 14px; transition: background .18s, color .18s; }
+.sf-nav__pill { height: 36px; padding: 0 18px; font-size: 14px; color: var(--green); transition: background .18s, color .18s; }
 .sf-nav__pill:hover, .sf-nav__pill.active { background: var(--green); color: var(--white); filter: none; text-decoration: none; }
 .sf-nav__icon { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 999px; color: var(--green); background: none; border: 0; cursor: pointer; transition: background .15s; }
 .sf-nav__icon:hover { background: rgba(36,88,42,.08); }

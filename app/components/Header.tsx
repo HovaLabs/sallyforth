@@ -48,7 +48,7 @@ export function Header({cart}: {cart: Promise<CartApiQueryFragment | null>}) {
         <div className="sf-nav__right">
           <nav className="sf-nav__links" aria-label="Primary">
             {NAV_LINKS.map((item) => (
-              <NavLink key={item.to} to={item.to} prefetch="intent" className="sf-pill sf-pill--outline sf-nav__pill">
+              <NavLink key={item.to} to={item.to} prefetch="intent" className="sf-pill sf-nav__pill">
                 {item.label}
               </NavLink>
             ))}
