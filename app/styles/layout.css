@@ -10,7 +10,7 @@
 /* ---- Header ---- */
 .sf-header { position: sticky; top: 0; z-index: 20; padding: 14px 24px; background: rgba(255,255,255,.72); backdrop-filter: saturate(1.2) blur(10px); -webkit-backdrop-filter: saturate(1.2) blur(10px); }
 /* Rounded floating bar: a contained card with a soft green border + drop shadow. */
-.sf-nav { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 8px 16px 8px 22px; background: var(--cream); border: 1px solid rgba(36,88,42,.16); border-radius: 26px; box-shadow: 0 10px 26px rgba(36,88,42,.10); }
+.sf-nav { display: flex; align-items: center; justify-content: space-between; gap: 16px; box-sizing: border-box; max-width: var(--content-max); margin-inline: auto; padding: 8px 16px 8px 22px; background: var(--cream); border: 1px solid rgba(36,88,42,.16); border-radius: 26px; box-shadow: 0 10px 26px rgba(36,88,42,.10); }
 /* Home page: lift the bar out of flow so the green hero runs to the very top and
    the bar floats over it (no white band). Other pages keep the sticky header. */
 .sf-frame__inner:has(.sf-home) > .sf-header { position: fixed; left: 0; right: 0; background: transparent; backdrop-filter: none; -webkit-backdrop-filter: none; }
@@ -19,7 +19,7 @@
 .sf-nav__icons { display: flex; align-items: center; gap: 4px; }
 .sf-nav__links { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; align-items: center; }
 /* Green outline pills; fill on hover and on the current page (NavLink adds .active). */
-.sf-nav__pill { height: 36px; padding: 0 18px; font-size: 14px; transition: background .18s, color .18s; }
+.sf-nav__pill { height: 36px; padding: 0 18px; font-size: 14px; color: var(--green); transition: background .18s, color .18s; }
 .sf-nav__pill:hover, .sf-nav__pill.active { background: var(--green); color: var(--white); filter: none; text-decoration: none; }
 .sf-nav__icon { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 999px; color: var(--green); background: none; border: 0; cursor: pointer; transition: background .15s; }
 .sf-nav__icon:hover { background: rgba(36,88,42,.08); }
@@ -77,14 +77,53 @@
 
 /* ---- Section chrome shared by home + content pages ---- */
 .pad { padding-left: var(--pad-x); padding-right: var(--pad-x); }
+/* Centred, gutter-padded content column inside a full-bleed section. */
+.sf-wrap { box-sizing: border-box; max-width: var(--content-max); margin-inline: auto; padding-inline: var(--pad-x); }
+
+/* ---- Site content width cap (var(--content-max)) ----
+   Page content is capped and centred on wide screens, matching the top nav and
+   footer. Full-bleed section background colours stay edge-to-edge — we cap the
+   inner content, not the coloured section. The home hero and marquee band are
+   intentionally left full-bleed. */
+.product, .collections, .collection, .blog, .blogs, .article,
+.page, .policy, .policies, .search, .cart {
+  box-sizing: border-box; max-width: var(--content-max); margin-inline: auto;
+}
+/* Shop: keep the cream band full-bleed; cap the content inside it instead. */
+.collection--shop { max-width: none; }
+.collection--shop > h1,
+.collection--shop .products-grid {
+  max-width: var(--content-max); margin-left: auto; margin-right: auto;
+}
+/* Home: cap the blog-teaser + store-carousel content (hero + marquee stay full-bleed).
+   The store header/intro carry their own margin shorthands (one is an inline style),
+   so !important is needed to re-centre them in step with the capped carousel. */
+.sf-blog__grid, .sf-store__intro, .sf-section-head, .sf-carousel {
+  box-sizing: border-box; max-width: var(--content-max); margin-inline: auto !important;
+}
 .sf-wave { position: absolute; left: 0; top: 1px; width: 100%; height: 60px; display: block; transform: translateY(-100%); }
 .sf-wave--flip { top: 0; transform: scaleY(-1); }
+/* Home hero seam: the hero clips its art flat at the bottom (overflow:hidden),
+   and the marquee's own white wave is trapped by the marquee's overflow, so it
+   can't rise to hide that straight cut. Instead, hide the marquee wave and drape
+   a cream wave over the hero's bottom edge — the clipped art tucks behind a wavy
+   edge that flows straight into the cream marquee below. The wave sits BELOW the
+   hero text (z-index < 3) and its crest is kept low, so the wordmark's descender
+   is never clipped, even on short viewports where the text sits near the bottom. */
+.sf-marquee .sf-wave--flip { display: none; }
+.sf-hero::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 44px; z-index: 2;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 60' preserveAspectRatio='none'%3E%3Cpath fill='%23FAF9F8' d='M0,32 C150,64 300,0 450,28 C600,56 750,8 900,30 C1050,52 1150,20 1200,28 L1200,60 L0,60 Z'/%3E%3C/svg%3E") no-repeat 0 0 / 100% 100%;
+  pointer-events: none;
+}
 .sf-art { position: absolute; pointer-events: none; z-index: 0; }
 .sf-section-head { position: relative; z-index: 3; display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 28px; flex-wrap: wrap; gap: 8px; }
 @media (max-width: 900px) { .sf-art { display: none; } }
 
 /* ---- Footer ---- */
 .sf-footer { position: relative; background: var(--white); color: var(--green); }
+/* Cap the footer nav (link columns + copy row) at the same width as the top nav. */
+.sf-footgrid, .sf-footcopy { box-sizing: border-box; max-width: var(--content-max); margin-inline: auto; }
 .sf-footgrid { position: relative; z-index: 3; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; padding-top: 56px; padding-bottom: 40px; }
 .sf-footer__title { font: 26px var(--font-display); margin-bottom: 12px; }
 .sf-footer__blurb { font: 14px/1.7 var(--font-body); margin: 0 0 18px; }
@@ -95,7 +134,8 @@
 .sf-footer__wordmark > img:first-child { width: 100%; display: block; }
 .sf-footer__snail { position: absolute; left: 82%; bottom: calc(48% + 24px); width: 5%; }
 .sf-newsletter { display: flex; }
-.sf-newsletter__input { flex: 1; min-width: 0; background: var(--cream); color: var(--green); font: italic 13px var(--font-body); padding: 12px 16px; border: 0; border-radius: 999px 0 0 999px; }
+.sf-newsletter__input { flex: 1; min-width: 0; margin: 0; background: var(--cream); color: var(--green); font: italic 13px var(--font-body); padding: 12px 16px; border: 1px solid var(--cream); border-right: 0; border-radius: 999px 0 0 999px; }
+.sf-newsletter__input:focus-visible { outline: none; border-color: var(--green); }
 .sf-newsletter__button { background: var(--red); color: var(--paper); font: 700 12px var(--font-body); letter-spacing: .16em; padding: 0 22px; border: 0; border-radius: 0 999px 999px 0; cursor: pointer; }
 .sf-newsletter__button:disabled { opacity: .7; cursor: default; }
 .sf-newsletter__error, .sf-newsletter__done { font: italic 13px var(--font-body); margin: 10px 0 0; flex-basis: 100%; }

@@ -1,8 +1,8 @@
 import {useOptimisticCart} from '@shopify/hydrogen';
 import {Link} from 'react-router';
 import type {CartApiQueryFragment} from 'storefrontapi.generated';
-import {useAside} from '~/components/Aside';
 import {CartLineItem, type CartLine} from '~/components/CartLineItem';
+import {ART} from '~/config/shop';
 import {CartSummary} from './CartSummary';
 
 export type CartLayout = 'page' | 'aside';
@@ -32,77 +32,50 @@ function getLineItemChildrenMap(lines: CartLine[]): LineItemChildrenMap {
   }
   return children;
 }
+
 /**
- * The main cart component that displays the cart items and summary.
- * It is used by both the /cart route and the cart aside dialog.
+ * The cart page body: line items on the left, a sticky totals tile on the
+ * right (stacked on small screens), or the branded empty state.
  */
 export function CartMain({layout, cart: originalCart}: CartMainProps) {
   // The useOptimisticCart hook applies pending actions to the cart
   // so the user immediately sees feedback when they modify the cart.
   const cart = useOptimisticCart(originalCart);
-
-  const linesCount = Boolean(cart?.lines?.nodes?.length || 0);
-  const withDiscount =
-    cart &&
-    Boolean(cart?.discountCodes?.filter((code) => code.applicable)?.length);
-  const className = `cart-main ${withDiscount ? 'with-discount' : ''}`;
+  const lines = cart?.lines?.nodes ?? [];
   const cartHasItems = cart?.totalQuantity ? cart.totalQuantity > 0 : false;
-  const childrenMap = getLineItemChildrenMap(cart?.lines?.nodes ?? []);
+  const childrenMap = getLineItemChildrenMap(lines);
+
+  if (!lines.length) return <CartEmpty />;
 
   return (
-    <section
-      className={className}
-      aria-label={layout === 'page' ? 'Cart page' : 'Cart drawer'}
-    >
-      <CartEmpty hidden={linesCount} layout={layout} />
-      <div className="cart-details">
+    <section className="sf-cart__layout" aria-label={layout === 'page' ? 'Cart page' : 'Cart drawer'}>
+      <div>
         <p id="cart-lines" className="sr-only">
           Line items
         </p>
-        <div>
-          <ul aria-labelledby="cart-lines">
-            {(cart?.lines?.nodes ?? []).map((line) => {
-              // we do not render non-parent lines at the root of the cart
-              if (
-                'parentRelationship' in line &&
-                line.parentRelationship?.parent
-              ) {
-                return null;
-              }
-              return (
-                <CartLineItem
-                  key={line.id}
-                  line={line}
-                  layout={layout}
-                  childrenMap={childrenMap}
-                />
-              );
-            })}
-          </ul>
-        </div>
-        {cartHasItems && <CartSummary cart={cart} layout={layout} />}
+        <ul aria-labelledby="cart-lines" className="sf-cart__lines">
+          {lines.map((line) => {
+            // we do not render non-parent lines at the root of the cart
+            if ('parentRelationship' in line && line.parentRelationship?.parent) {
+              return null;
+            }
+            return <CartLineItem key={line.id} line={line} childrenMap={childrenMap} />;
+          })}
+        </ul>
       </div>
+      {cartHasItems ? <CartSummary cart={cart} /> : null}
     </section>
   );
 }
 
-function CartEmpty({
-  hidden = false,
-}: {
-  hidden: boolean;
-  layout?: CartMainProps['layout'];
-}) {
-  const {close} = useAside();
+function CartEmpty() {
   return (
-    <div hidden={hidden}>
-      <br />
-      <p>
-        Looks like you haven&rsquo;t added anything yet, let&rsquo;s get you
-        started!
-      </p>
-      <br />
-      <Link to="/collections" onClick={close} prefetch="viewport">
-        Continue shopping →
+    <div className="sf-cart-empty">
+      <img src={ART.peapod} alt="" />
+      <h2 className="sf-cart-empty__title">Your basket is empty</h2>
+      <p>Nothing picked yet — the rows are full.</p>
+      <Link to="/collections/all" prefetch="viewport" className="sf-cart-empty__cta">
+        WANDER THE ROWS
       </Link>
     </div>
   );

@@ -1,7 +1,8 @@
 /* ---- Hero ---- */
 .sf-hero { position: relative; height: calc(100vh - 80px); min-height: 560px; overflow: hidden; background: var(--white); }
-.sf-hero__layer { position: absolute; pointer-events: none; will-change: transform; }
-.sf-hero__text { position: absolute; inset: 0; z-index: 3; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+.sf-hero__layer { position: absolute; pointer-events: none; will-change: transform; translate: -50% -50%; }
+.sf-hero__layer > img { display: block; width: 100%; height: auto; }
+.sf-hero__text { position: absolute; inset: 0; z-index: 3; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; transform: translateY(100px); }
 .sf-hero__halo { background: radial-gradient(ellipse 52% 50% at 50% 50%, rgba(255,255,255,.9) 42%, rgba(255,255,255,.77) 62%, rgba(255,255,255,.44) 80%, rgba(255,255,255,0) 96%); padding: 110px 140px; }
 .sf-hero__eyebrow { font: 700 12px var(--font-body); letter-spacing: .34em; color: var(--green); margin-bottom: 20px; }
 .sf-hero__wordmark { width: min(820px, 82vw); margin: 0 auto; }
@@ -16,7 +17,11 @@
 
 /* ---- Marquee ---- */
 @keyframes sfMarquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-.sf-marquee { position: relative; overflow: hidden; background: var(--cream); padding: 72px 0; white-space: nowrap; }
+/* Asymmetric padding centres the moving line in the *visible* wavy band: the
+   hero drapes a cream wave above this box (adding cream on top) and the blog's
+   white wave rises into its bottom (carving cream away), which shifts the band's
+   visual centre up ~30px from the box centre. Less top / more bottom re-centres. */
+.sf-marquee { position: relative; overflow: hidden; background: var(--cream); padding: 43px 0 101px; white-space: nowrap; }
 .sf-marquee__track { display: inline-flex; align-items: center; font: 700 13px var(--font-body); letter-spacing: .26em; color: var(--green); animation: sfMarquee 28s linear infinite; }
 .sf-marquee__unit { display: inline-flex; gap: 38px; align-items: center; padding-right: 38px; }
 .sf-marquee__item { display: inline-flex; gap: 38px; align-items: center; }

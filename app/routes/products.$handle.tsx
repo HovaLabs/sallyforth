@@ -95,30 +95,37 @@ export default function Product() {
     selectedOrFirstAvailableVariant: selectedVariant,
   });
 
-  const {title, descriptionHtml} = product;
+  const {title, vendor, descriptionHtml} = product;
 
   return (
     <div className="product">
-      <ProductImage image={selectedVariant?.image} />
+      <div className="product-media">
+        <ProductImage image={selectedVariant?.image} />
+      </div>
       <div className="product-main">
-        <h1>{title}</h1>
-        <ProductPrice
-          price={selectedVariant?.price}
-          compareAtPrice={selectedVariant?.compareAtPrice}
-        />
-        <br />
+        <header className="product-header">
+          {vendor ? <p className="sf-eyebrow product-vendor">{vendor}</p> : null}
+          <h1 className="product-title">{title}</h1>
+          <ProductPrice
+            price={selectedVariant?.price}
+            compareAtPrice={selectedVariant?.compareAtPrice}
+          />
+        </header>
+        <hr className="product-rule" />
         <ProductForm
           productOptions={productOptions}
           selectedVariant={selectedVariant}
         />
-        <br />
-        <br />
-        <p>
-          <strong>Description</strong>
-        </p>
-        <br />
-        <div dangerouslySetInnerHTML={{__html: descriptionHtml}} />
-        <br />
+        {descriptionHtml ? (
+          <section className="product-description">
+            <p className="sf-eyebrow">Details</p>
+            <hr className="product-rule" />
+            <div
+              className="product-prose"
+              dangerouslySetInnerHTML={{__html: descriptionHtml}}
+            />
+          </section>
+        ) : null}
       </div>
       <Analytics.ProductView
         data={{

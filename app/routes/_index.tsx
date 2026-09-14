@@ -70,14 +70,7 @@ const HOME_FEATURED_QUERY = `#graphql
       title
       products(first: 8) { nodes { ...HomeProductCard } }
     }
-    fallback: collections(first: 1, sortKey: UPDATED_AT, reverse: true) {
-      nodes {
-        id
-        handle
-        title
-        products(first: 8) { nodes { ...HomeProductCard } }
-      }
-    }
+    recent: products(first: 8, sortKey: BEST_SELLING) { nodes { ...HomeProductCard } }
   }
 ` as const;
 

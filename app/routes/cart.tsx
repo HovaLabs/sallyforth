@@ -2,11 +2,13 @@ import {useLoaderData, data, type HeadersFunction} from 'react-router';
 import type {Route} from './+types/cart';
 import type {CartQueryDataReturn} from '@shopify/hydrogen';
 import {CartForm} from '@shopify/hydrogen';
+import cartStyles from '~/styles/cart.css?url';
 import {CartMain} from '~/components/CartMain';
+import {SHOP} from '~/config/shop';
 
-export const meta: Route.MetaFunction = () => {
-  return [{title: `Hydrogen | Cart`}];
-};
+export const meta: Route.MetaFunction = () => [{title: `Your basket — ${SHOP.name}`}];
+
+export const links: Route.LinksFunction = () => [{rel: 'stylesheet', href: cartStyles}];
 
 export const headers: HeadersFunction = ({actionHeaders}) => actionHeaders;
 
@@ -103,10 +105,15 @@ export async function loader({context}: Route.LoaderArgs) {
 
 export default function Cart() {
   const cart = useLoaderData<typeof loader>();
+  const count = cart?.totalQuantity ?? 0;
 
   return (
-    <div className="cart">
-      <h1>Cart</h1>
+    <div className="cart sf-cart">
+      <header className="sf-cart__head">
+        <div className="sf-eyebrow">The store</div>
+        <h1 className="sf-cart__title">Your basket</h1>
+        <p className="sf-cart__count">{count === 0 ? 'Empty for now' : `${count} ${count === 1 ? 'item' : 'items'}`}</p>
+      </header>
       <CartMain layout="page" cart={cart} />
     </div>
   );

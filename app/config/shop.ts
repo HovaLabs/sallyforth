@@ -45,6 +45,7 @@ export const ART = {
   radishA: art('radish-a.webp'),
   radishB: art('radish-b.webp'),
   radishC: art('radish-c.webp'),
+  caterpillar: art('caterpillar.webp'),
   snail: art('snail.webp'),
   carrotBig: art('carrot-big.webp'),
   beetBig: art('beet-big.webp'),

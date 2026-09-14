@@ -1,46 +1,32 @@
 import type {CartApiQueryFragment} from 'storefrontapi.generated';
-import type {CartLayout} from '~/components/CartMain';
 import {CartForm, Money, type OptimisticCart} from '@shopify/hydrogen';
 import {useEffect, useId, useRef, useState} from 'react';
 import {useFetcher} from 'react-router';
 
 type CartSummaryProps = {
   cart: OptimisticCart<CartApiQueryFragment | null>;
-  layout: CartLayout;
 };
 
-export function CartSummary({cart, layout}: CartSummaryProps) {
-  const className =
-    layout === 'page' ? 'cart-summary-page' : 'cart-summary-aside';
+/** Sticky cream totals tile: subtotal, discount + gift-card forms, checkout CTA. */
+export function CartSummary({cart}: CartSummaryProps) {
   const summaryId = useId();
   const discountsHeadingId = useId();
   const discountCodeInputId = useId();
   const giftCardHeadingId = useId();
   const giftCardInputId = useId();
 
+  // Deliberately a <div>, not <aside>: the skeleton styles the bare `aside` element as the fixed drawer.
   return (
-    <div aria-labelledby={summaryId} className={className}>
-      <h4 id={summaryId}>Totals</h4>
-      <dl role="group" className="cart-subtotal">
+    <div aria-labelledby={summaryId} className="sf-cart-summary">
+      <span id={summaryId} className="sf-eyebrow">
+        Totals
+      </span>
+      <dl role="group" className="sf-cart-summary__row">
         <dt>Subtotal</dt>
-        <dd>
-          {cart?.cost?.subtotalAmount?.amount ? (
-            <Money data={cart?.cost?.subtotalAmount} />
-          ) : (
-            '-'
-          )}
-        </dd>
+        <dd>{cart?.cost?.subtotalAmount?.amount ? <Money data={cart.cost.subtotalAmount} /> : '—'}</dd>
       </dl>
-      <CartDiscounts
-        discountCodes={cart?.discountCodes}
-        discountsHeadingId={discountsHeadingId}
-        discountCodeInputId={discountCodeInputId}
-      />
-      <CartGiftCard
-        giftCardCodes={cart?.appliedGiftCards}
-        giftCardHeadingId={giftCardHeadingId}
-        giftCardInputId={giftCardInputId}
-      />
+      <CartDiscounts discountCodes={cart?.discountCodes} discountsHeadingId={discountsHeadingId} discountCodeInputId={discountCodeInputId} />
+      <CartGiftCard giftCardCodes={cart?.appliedGiftCards} giftCardHeadingId={giftCardHeadingId} giftCardInputId={giftCardInputId} />
       <CartCheckoutActions checkoutUrl={cart?.checkoutUrl} />
     </div>
   );
@@ -50,12 +36,9 @@ function CartCheckoutActions({checkoutUrl}: {checkoutUrl?: string}) {
   if (!checkoutUrl) return null;
 
   return (
-    <div>
-      <a href={checkoutUrl} target="_self">
-        <p>Continue to Checkout &rarr;</p>
-      </a>
-      <br />
-    </div>
+    <a href={checkoutUrl} target="_self" className="sf-cart-summary__checkout">
+      CONTINUE TO CHECKOUT &rarr;
+    </a>
   );
 }
 
@@ -68,48 +51,41 @@ function CartDiscounts({
   discountsHeadingId: string;
   discountCodeInputId: string;
 }) {
-  const codes: string[] =
-    discountCodes
-      ?.filter((discount) => discount.applicable)
-      ?.map(({code}) => code) || [];
+  const codes: string[] = discountCodes?.filter((discount) => discount.applicable)?.map(({code}) => code) || [];
 
   return (
     <section aria-label="Discounts">
-      {/* Have existing discount, display it with a remove option */}
-      <dl hidden={!codes.length}>
-        <div>
-          <dt id={discountsHeadingId}>Discounts</dt>
-          <UpdateDiscountForm>
-            <div
-              className="cart-discount"
-              role="group"
-              aria-labelledby={discountsHeadingId}
-            >
-              <code>{codes?.join(', ')}</code>
-              &nbsp;
-              <button type="submit" aria-label="Remove discount">
-                Remove
-              </button>
-            </div>
-          </UpdateDiscountForm>
-        </div>
-      </dl>
+      <p className="sf-cart-summary__label" id={discountsHeadingId}>
+        Discount code
+      </p>
+
+      {/* Applied codes as chips; each × resubmits the list without that code. */}
+      {codes.length ? (
+        <ul className="sf-cart-summary__chips" aria-labelledby={discountsHeadingId}>
+          {codes.map((code) => (
+            <li key={code}>
+              <UpdateDiscountForm discountCodes={codes.filter((c) => c !== code)}>
+                <span className="sf-cart-summary__chip">
+                  <code>{code}</code>
+                  <button type="submit" aria-label={`Remove discount ${code}`}>
+                    &times;
+                  </button>
+                </span>
+              </UpdateDiscountForm>
+            </li>
+          ))}
+        </ul>
+      ) : null}
 
       {/* Show an input to apply a discount */}
       <UpdateDiscountForm discountCodes={codes}>
-        <div>
+        <div className="sf-cart-summary__form">
           <label htmlFor={discountCodeInputId} className="sr-only">
             Discount code
           </label>
-          <input
-            id={discountCodeInputId}
-            type="text"
-            name="discountCode"
-            placeholder="Discount code"
-          />
-          &nbsp;
-          <button type="submit" aria-label="Apply discount code">
-            Apply
+          <input id={discountCodeInputId} type="text" name="discountCode" placeholder="Discount code" className="sf-cart-summary__input" />
+          <button type="submit" aria-label="Apply discount code" className="sf-cart-summary__apply">
+            APPLY
           </button>
         </div>
       </UpdateDiscountForm>
@@ -117,13 +93,7 @@ function CartDiscounts({
   );
 }
 
-function UpdateDiscountForm({
-  discountCodes,
-  children,
-}: {
-  discountCodes?: string[];
-  children: React.ReactNode;
-}) {
+function UpdateDiscountForm({discountCodes, children}: {discountCodes?: string[]; children: React.ReactNode}) {
   return (
     <CartForm
       route="/cart"
@@ -164,14 +134,9 @@ function CartGiftCard({
     const currentCardIds = giftCardCodes?.map((card) => card.id) || [];
 
     if (removedCardIndex !== null && giftCardCodes) {
-      const focusTargetIndex = Math.min(
-        removedCardIndex,
-        giftCardCodes.length - 1,
-      );
+      const focusTargetIndex = Math.min(removedCardIndex, giftCardCodes.length - 1);
       const focusTargetCard = giftCardCodes[focusTargetIndex];
-      const focusButton = focusTargetCard
-        ? removeButtonRefs.current.get(focusTargetCard.id)
-        : null;
+      const focusButton = focusTargetCard ? removeButtonRefs.current.get(focusTargetCard.id) : null;
 
       if (focusButton) {
         focusButton.focus();
@@ -194,11 +159,14 @@ function CartGiftCard({
 
   return (
     <section aria-label="Gift cards">
+      <p className="sf-cart-summary__label" id={giftCardHeadingId}>
+        Gift card
+      </p>
+
       {giftCardCodes && giftCardCodes.length > 0 && (
-        <dl>
-          <dt id={giftCardHeadingId}>Applied Gift Card(s)</dt>
+        <ul className="sf-cart-summary__chips" aria-labelledby={giftCardHeadingId}>
           {giftCardCodes.map((giftCard) => (
-            <dd key={giftCard.id} className="cart-discount">
+            <li key={giftCard.id}>
               <RemoveGiftCardForm
                 giftCardId={giftCard.id}
                 lastCharacters={giftCard.lastCharacters}
@@ -212,16 +180,15 @@ function CartGiftCard({
                 }}
               >
                 <code>***{giftCard.lastCharacters}</code>
-                &nbsp;
-                <Money data={giftCard.amountUsed} />
+                <Money data={giftCard.amountUsed} as="span" />
               </RemoveGiftCardForm>
-            </dd>
+            </li>
           ))}
-        </dl>
+        </ul>
       )}
 
       <AddGiftCardForm fetcherKey="gift-card-add">
-        <div>
+        <div className="sf-cart-summary__form">
           <label htmlFor={giftCardInputId} className="sr-only">
             Gift card code
           </label>
@@ -231,14 +198,15 @@ function CartGiftCard({
             name="giftCardCode"
             placeholder="Gift card code"
             ref={giftCardCodeInput}
+            className="sf-cart-summary__input"
           />
-          &nbsp;
           <button
             type="submit"
             disabled={giftCardAddFetcher.state !== 'idle'}
             aria-label="Apply gift card code"
+            className="sf-cart-summary__apply"
           >
-            Apply
+            APPLY
           </button>
         </div>
       </AddGiftCardForm>
@@ -246,19 +214,9 @@ function CartGiftCard({
   );
 }
 
-function AddGiftCardForm({
-  fetcherKey,
-  children,
-}: {
-  fetcherKey?: string;
-  children: React.ReactNode;
-}) {
+function AddGiftCardForm({fetcherKey, children}: {fetcherKey?: string; children: React.ReactNode}) {
   return (
-    <CartForm
-      fetcherKey={fetcherKey}
-      route="/cart"
-      action={CartForm.ACTIONS.GiftCardCodesAdd}
-    >
+    <CartForm fetcherKey={fetcherKey} route="/cart" action={CartForm.ACTIONS.GiftCardCodesAdd}>
       {children}
     </CartForm>
   );
@@ -285,16 +243,12 @@ function RemoveGiftCardForm({
         giftCardCodes: [giftCardId],
       }}
     >
-      {children}
-      &nbsp;
-      <button
-        type="submit"
-        aria-label={`Remove gift card ending in ${lastCharacters}`}
-        onClick={onRemoveClick}
-        ref={buttonRef}
-      >
-        Remove
-      </button>
+      <span className="sf-cart-summary__chip">
+        {children}
+        <button type="submit" aria-label={`Remove gift card ending in ${lastCharacters}`} onClick={onRemoveClick} ref={buttonRef}>
+          &times;
+        </button>
+      </span>
     </CartForm>
   );
 }

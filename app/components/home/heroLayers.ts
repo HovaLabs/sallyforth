@@ -5,8 +5,18 @@ export type LayerKind = 'A' | 'B' | 'C' | 'L' | 'R' | 'BOTTOM' | 'CL' | 'BR' | '
 export type HeroLayer = {
   kind: LayerKind;
   src: string;
-  /** absolute-position CSS for the layer at rest */
-  style: {left?: string; right?: string; top?: string; bottom?: string; width: string};
+  /**
+   * Where the layer's centre sits at rest. `left` is a px offset from the
+   * hero's horizontal centre; `top` is a share of the hero height plus the
+   * same px nudge the hero text gets, so the ring tracks the content.
+   */
+  style: {left: string; top: string; width: string};
+  /**
+   * Static wreath orientation (deg, clockwise) applied to the art inside the
+   * moving layer, on top of the recipe's own rotation. Keeping it on the inner
+   * element leaves every recipe's fly-out direction untouched.
+   */
+  rotate: number;
 };
 
 const px = (n: number) => `${Math.round(n * 1000) / 1000}px`;
@@ -27,18 +37,33 @@ export function layerTransform(kind: LayerKind, p: number): string {
   }
 }
 
+/**
+ * Wreath ring: layer centres sit on an ellipse (560px half-width, 46% of the
+ * hero height half-height) around the hero text. Each vegetable is turned so
+ * its root-to-leaf axis follows the ring like a laurel: stems gather at the
+ * bottom, leaf tips meet at the top, and every layer keeps its landing-page
+ * image, size and scroll recipe (which is why each kind sits on the side of
+ * the ring it already flies away from).
+ */
+const ring = (angleDeg: number, dxNudge = 0, dyNudge = 0) => {
+  const a = (angleDeg * Math.PI) / 180;
+  const dx = Math.round(560 * Math.cos(a)) + dxNudge;
+  const yPct = Math.round((50 + 46 * Math.sin(a)) * 10) / 10;
+  return {left: `calc(50% ${dx < 0 ? '-' : '+'} ${Math.abs(dx)}px)`, top: `calc(${yPct}% + ${80 + dyNudge}px)`};
+};
+
 /** The twelve art layers of the landing-page hero, in DOM order. */
 export const HERO_LAYERS: ReadonlyArray<HeroLayer> = [
-  {kind: 'A', src: ART.radishA, style: {left: '-260px', top: '-120px', width: '720px'}},
-  {kind: 'B', src: ART.radishB, style: {right: '-300px', top: '-80px', width: '760px'}},
-  {kind: 'C', src: ART.radishC, style: {left: '32%', bottom: '-360px', width: '720px'}},
-  {kind: 'L', src: ART.radishB, style: {left: '-80px', bottom: '-140px', width: '520px'}},
-  {kind: 'R', src: ART.radishA, style: {right: '-60px', bottom: '-120px', width: '500px'}},
-  {kind: 'T', src: ART.radishC, style: {left: '22%', top: '-300px', width: '520px'}},
-  {kind: 'T', src: ART.radishA, style: {right: '18%', top: '-220px', width: '440px'}},
-  {kind: 'BOTTOM', src: ART.carrotBig, style: {left: '12%', bottom: '-420px', width: '300px'}},
-  {kind: 'BOTTOM', src: ART.carrotBig, style: {right: '10%', bottom: '-460px', width: '340px'}},
-  {kind: 'CL', src: ART.carrotBig, style: {left: '-120px', top: '26%', width: '260px'}},
-  {kind: 'BOTTOM', src: ART.beetBig, style: {left: '38%', bottom: '-520px', width: '340px'}},
-  {kind: 'BR', src: ART.beetBig, style: {right: '-140px', top: '22%', width: '300px'}},
+  {kind: 'A',      src: ART.radishA,   style: {...ring(210), width: '720px'}, rotate: -31},       // 10 o'clock
+  {kind: 'BR',     src: ART.beetBig,   style: {...ring(0, 30), width: '300px'}, rotate: -52},     // 3 o'clock, behind the 2 o'clock radish
+  {kind: 'B',      src: ART.radishB,   style: {...ring(330), width: '760px'}, rotate: 20},        // 2 o'clock
+  {kind: 'C',      src: ART.radishC,   style: {...ring(95, -30), width: '720px'}, rotate: -128},  // bottom, leaves sweep left
+  {kind: 'L',      src: ART.radishB,   style: {...ring(150), width: '520px'}, rotate: 8},         // 8 o'clock
+  {kind: 'R',      src: ART.radishA,   style: {...ring(30), width: '500px'}, rotate: -13},        // 4 o'clock
+  {kind: 'T',      src: ART.radishC,   style: {...ring(240), width: '520px'}, rotate: -160},      // 11 o'clock
+  {kind: 'T',      src: ART.radishA,   style: {...ring(300), width: '440px'}, rotate: 58},        // 1 o'clock
+  {kind: 'BOTTOM', src: ART.carrotBig, style: {...ring(120), width: '300px'}, rotate: -61},       // 7 o'clock
+  {kind: 'BOTTOM', src: ART.carrotBig, style: {...ring(60), width: '340px'}, rotate: 77},         // 5 o'clock
+  {kind: 'CL',     src: ART.carrotBig, style: {...ring(180), width: '260px'}, rotate: 56},        // 9 o'clock
+  {kind: 'BOTTOM', src: ART.beetBig,   style: {...ring(85, 30, -25), width: '340px'}, rotate: 95}, // bottom, leaves sweep right
 ];

@@ -16,4 +16,28 @@ describe('layerTransform', () => {
     expect(HERO_LAYERS).toHaveLength(12);
     for (const layer of HERO_LAYERS) expect(layer.src.startsWith('/art/')).toBe(true);
   });
+  it('keeps the landing-page image, size, and scroll recipe of every layer', () => {
+    // The wreath only moves, rotates and re-stacks layers; these triples are the original hero.
+    expect(HERO_LAYERS.map((l) => [l.kind, l.src, l.style.width])).toEqual([
+      ['A', '/art/radish-a.webp', '720px'],
+      ['BR', '/art/beet-big.webp', '300px'],
+      ['B', '/art/radish-b.webp', '760px'],
+      ['C', '/art/radish-c.webp', '720px'],
+      ['L', '/art/radish-b.webp', '520px'],
+      ['R', '/art/radish-a.webp', '500px'],
+      ['T', '/art/radish-c.webp', '520px'],
+      ['T', '/art/radish-a.webp', '440px'],
+      ['BOTTOM', '/art/carrot-big.webp', '300px'],
+      ['BOTTOM', '/art/carrot-big.webp', '340px'],
+      ['CL', '/art/carrot-big.webp', '260px'],
+      ['BOTTOM', '/art/beet-big.webp', '340px'],
+    ]);
+  });
+  it('places every layer by its centre on the wreath ring with a static rotation', () => {
+    for (const layer of HERO_LAYERS) {
+      expect(layer.style.left).toMatch(/^calc\(50% [+-] \d+px\)$/);
+      expect(layer.style.top).toMatch(/^calc\([\d.]+% \+ \d+px\)$/);
+      expect(Number.isFinite(layer.rotate)).toBe(true);
+    }
+  });
 });
