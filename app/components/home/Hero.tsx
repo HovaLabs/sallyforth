@@ -1,5 +1,4 @@
 import {useEffect, useRef} from 'react';
-import {Link} from 'react-router';
 import {ART, SHOP} from '~/config/shop';
 import {heroProgress} from '~/lib/parallax';
 import {HERO_LAYERS, layerTransform} from '~/components/home/heroLayers';
@@ -51,10 +50,6 @@ export function Hero() {
               <img src={ART.snail} alt="" className="sf-hero__snail" />
               <p className="sf-hero__tagline">Into the garden of creativity</p>
             </div>
-          </div>
-          <div className="sf-hero__ctas">
-            <Link to="/collections/all" className="sf-hero__cta">SHOP THE STORE</Link>
-            <Link to="/blog" className="sf-hero__alt">or start with the blog</Link>
           </div>
         </div>
       </div>

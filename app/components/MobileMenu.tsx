@@ -92,9 +92,9 @@ export function MobileMenu() {
         <button type="button" className="sf-pill sf-pill--outline sf-menu__pill" onClick={() => open('search')} style={stagger(NAV_LINKS.length)}>
           Search
         </button>
-        <button type="button" className="sf-pill sf-pill--outline sf-menu__pill" onClick={() => open('cart')} style={stagger(NAV_LINKS.length + 1)}>
+        <Link to="/cart" onClick={close} className="sf-pill sf-pill--outline sf-menu__pill" style={stagger(NAV_LINKS.length + 1)}>
           <CartIcon /> Cart
-        </button>
+        </Link>
       </div>
     </div>
   );

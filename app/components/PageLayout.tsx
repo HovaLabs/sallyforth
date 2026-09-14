@@ -1,8 +1,7 @@
-import {Await, Link} from 'react-router';
-import {Suspense, useId} from 'react';
+import {Link} from 'react-router';
+import {useId} from 'react';
 import type {CartApiQueryFragment} from 'storefrontapi.generated';
 import {Aside} from '~/components/Aside';
-import {CartMain} from '~/components/CartMain';
 import {Footer} from '~/components/Footer';
 import {Frame} from '~/components/Frame';
 import {Header} from '~/components/Header';
@@ -19,7 +18,6 @@ interface PageLayoutProps {
 export function PageLayout({cart, children = null}: PageLayoutProps) {
   return (
     <Aside.Provider>
-      <CartAside cart={cart} />
       <SearchAside />
       <MobileMenu />
       <a className="sf-skip" href="#main">Skip to content</a>
@@ -29,16 +27,6 @@ export function PageLayout({cart, children = null}: PageLayoutProps) {
         <Footer />
       </Frame>
     </Aside.Provider>
-  );
-}
-
-function CartAside({cart}: {cart: PageLayoutProps['cart']}) {
-  return (
-    <Aside type="cart" heading="Your basket">
-      <Suspense fallback={<p>Loading cart …</p>}>
-        <Await resolve={cart}>{(cart) => <CartMain cart={cart} layout="aside" />}</Await>
-      </Suspense>
-    </Aside>
   );
 }
 

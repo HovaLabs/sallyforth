@@ -3,8 +3,8 @@ import {Await, Link} from 'react-router';
 import {Image, Money} from '@shopify/hydrogen';
 import type {HomeFeaturedQuery, HomeProductCardFragment} from 'storefrontapi.generated';
 import {AddToCartButton} from '~/components/AddToCartButton';
-import {useAside} from '~/components/Aside';
 import {WaveDivider} from '~/components/WaveDivider';
+import {featuredProducts} from '~/components/home/featuredProducts';
 import {ART} from '~/config/shop';
 
 export function StoreCarousel({featured}: {featured: Promise<HomeFeaturedQuery | null>}) {
@@ -20,8 +20,7 @@ export function StoreCarousel({featured}: {featured: Promise<HomeFeaturedQuery |
       <Suspense fallback={<div className="sf-carousel" aria-busy="true" />}>
         <Await resolve={featured}>
           {(data) => {
-            const collection = data?.collection ?? data?.fallback?.nodes?.[0] ?? null;
-            const products = collection?.products.nodes ?? [];
+            const products = featuredProducts(data);
             return (
               <div id="carousel" className="sf-carousel" role="list" aria-label="Featured products">
                 {products.length === 0 ? (
@@ -39,7 +38,6 @@ export function StoreCarousel({featured}: {featured: Promise<HomeFeaturedQuery |
 }
 
 export function ProductCard({product}: {product: HomeProductCardFragment}) {
-  const {open} = useAside();
   const variants = product.variants.nodes;
   const single = variants.length === 1 ? variants[0] : null;
   const soldOut = !product.availableForSale;
@@ -61,7 +59,6 @@ export function ProductCard({product}: {product: HomeProductCardFragment}) {
       ) : single ? (
         <AddToCartButton
           lines={[{merchandiseId: single.id, quantity: 1, selectedVariant: single}]}
-          onClick={() => open('cart')}
           analytics={{products: [{productGid: product.id, variantGid: single.id, name: product.title, price: single.price.amount, quantity: 1}]}}
         >
           ADD TO CART

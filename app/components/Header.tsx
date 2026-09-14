@@ -76,22 +76,20 @@ export function Header({cart}: {cart: Promise<CartApiQueryFragment | null>}) {
 }
 
 function CartBadge({count}: {count: number}) {
-  const {open} = useAside();
   const {publish, shop, cart, prevCart} = useAnalytics();
   return (
-    <a
-      href="/cart"
+    <Link
+      to="/cart"
+      prefetch="intent"
       className="sf-nav__icon"
       aria-label={`Cart (${count})`}
-      onClick={(e) => {
-        e.preventDefault();
-        open('cart');
+      onClick={() => {
         publish('cart_viewed', {cart, prevCart, shop, url: window.location.href || ''} as CartViewPayload);
       }}
     >
       <CartIcon />
       {count > 0 ? <span className="sf-nav__count">{count}</span> : null}
-    </a>
+    </Link>
   );
 }
 

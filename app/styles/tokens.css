@@ -39,6 +39,7 @@
   --prose-size: 17px;
   --prose-leading: 1.75;
   --pad-x: 64px;
+  --content-max: 1350px; /* max width for page content, top nav, and footer */
 }
 @media (max-width: 900px) { :root { --pad-x: 24px; } }
 

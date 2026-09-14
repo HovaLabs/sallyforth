@@ -5,7 +5,7 @@ import {WaveDivider} from '~/components/WaveDivider';
 export function AboutStory() {
   return (
     <section className="sf-about-story" aria-labelledby="about-patch">
-      <WaveDivider variant="footer" fill="white" />
+      <WaveDivider variant="footer" fill="cream" />
       <img src={ART.tomato} alt="" className="sf-about-story__tomato" />
       <div className="sf-about-story__grid pad">
         <div className="sf-about-story__aside">
