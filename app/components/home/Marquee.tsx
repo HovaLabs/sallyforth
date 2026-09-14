@@ -1,6 +1,7 @@
 import {useEffect, useRef, useState} from 'react';
 import {ART} from '~/config/shop';
 import {computeMarqueeReps} from '~/lib/marquee';
+import {WaveDivider} from '~/components/WaveDivider';
 
 const ITEMS: Array<[string, string, number]> = [
   ['GROW', ART.carrot, 26], ['MAKE', ART.tomato, 24], ['TELL', ART.peapod, 26],
@@ -54,6 +55,7 @@ export function Marquee() {
   ));
   return (
     <div className="sf-marquee">
+      <WaveDivider variant="blog" fill="white" flip />
       <div className="sf-marquee__track" ref={track} aria-hidden="true" style={{animationDuration: `${28 * reps}s`}}>
         {copies}
       </div>

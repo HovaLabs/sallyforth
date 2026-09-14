@@ -6,10 +6,14 @@ const PATHS = {
 
 const FILLS = {white: 'var(--white)', cream: 'var(--cream)'} as const;
 
-/** Sits at the top edge of a section and waves into the section above it. */
-export function WaveDivider({variant, fill}: {variant: keyof typeof PATHS; fill: keyof typeof FILLS}) {
+/**
+ * Sits at the top edge of a section and waves into the section above it.
+ * Pass `flip` to instead sit at the top of the *current* section and wave
+ * downward into it (a wavy top edge, mirroring a wavy bottom).
+ */
+export function WaveDivider({variant, fill, flip = false}: {variant: keyof typeof PATHS; fill: keyof typeof FILLS; flip?: boolean}) {
   return (
-    <svg className="sf-wave" viewBox="0 0 1200 60" preserveAspectRatio="none" aria-hidden="true">
+    <svg className={flip ? 'sf-wave sf-wave--flip' : 'sf-wave'} viewBox="0 0 1200 60" preserveAspectRatio="none" aria-hidden="true">
       <path fill={FILLS[fill]} d={PATHS[variant]} />
     </svg>
   );
