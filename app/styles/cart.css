@@ -35,7 +35,8 @@
 .sf-cart-summary__row dd { margin: 0; font-weight: 700; }
 .sf-cart-summary__label { margin: 20px 0 0; font: 700 11px var(--font-body); letter-spacing: .3em; text-transform: uppercase; }
 .sf-cart-summary__form { display: flex; margin-top: 10px; }
-.sf-cart-summary__input { flex: 1; min-width: 0; background: var(--white); color: var(--green); font: italic 13px var(--font-body); padding: 11px 16px; border: 1px solid rgba(36,88,42,.16); border-right: 0; border-radius: 999px 0 0 999px; }
+.sf-cart-summary__input { flex: 1; min-width: 0; margin: 0; background: var(--white); color: var(--green); font: italic 13px var(--font-body); padding: 11px 16px; border: 1px solid var(--white); border-right: 0; border-radius: 999px 0 0 999px; }
+.sf-cart-summary__input:focus-visible { outline: none; border-color: var(--green); }
 .sf-cart-summary__apply { background: var(--red); color: var(--paper); font: 700 12px var(--font-body); letter-spacing: .16em; padding: 0 18px; border: 0; border-radius: 0 999px 999px 0; cursor: pointer; }
 .sf-cart-summary__apply:disabled { opacity: .7; cursor: default; }
 .sf-cart-summary__chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 0; padding: 0; }
