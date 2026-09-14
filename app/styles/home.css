@@ -1,6 +1,7 @@
 /* ---- Hero ---- */
 .sf-hero { position: relative; height: calc(100vh - 80px); min-height: 560px; overflow: hidden; background: var(--white); }
-.sf-hero__layer { position: absolute; pointer-events: none; will-change: transform; }
+.sf-hero__layer { position: absolute; pointer-events: none; will-change: transform; translate: -50% -50%; }
+.sf-hero__layer > img { display: block; width: 100%; height: auto; }
 .sf-hero__text { position: absolute; inset: 0; z-index: 3; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; transform: translateY(100px); }
 .sf-hero__halo { background: radial-gradient(ellipse 52% 50% at 50% 50%, rgba(255,255,255,.9) 42%, rgba(255,255,255,.77) 62%, rgba(255,255,255,.44) 80%, rgba(255,255,255,0) 96%); padding: 110px 140px; }
 .sf-hero__eyebrow { font: 700 12px var(--font-body); letter-spacing: .34em; color: var(--green); margin-bottom: 20px; }
