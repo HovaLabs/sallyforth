@@ -23,7 +23,6 @@
 .sf-nav__pill:hover, .sf-nav__pill.active { background: var(--green); color: var(--white); filter: none; text-decoration: none; }
 .sf-nav__icon { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 999px; color: var(--green); background: none; border: 0; cursor: pointer; transition: background .15s; }
 .sf-nav__icon:hover { background: rgba(36,88,42,.08); }
-.sf-nav__icon--search { display: none; } /* desktop uses the search bar; the icon returns ≤760px */
 .sf-nav__count { position: absolute; top: -2px; right: -2px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: var(--red); color: var(--white); font: 700 11px/18px var(--font-body); text-align: center; }
 .sf-burger { display: none; flex-direction: column; gap: 5px; padding: 6px; background: none; border: 0; cursor: pointer; }
 .sf-burger span { display: block; width: 24px; height: 2px; background: var(--green); }
@@ -41,10 +40,13 @@
 .sf-nav__search-btn svg { width: 18px; height: 18px; }
 @media (max-width: 1000px) { .sf-nav__search { width: 200px; } }
 
-@media (max-width: 900px) { .sf-header { padding-left: 14px; padding-right: 14px; } .sf-nav { padding-left: 16px; padding-right: 12px; } }
-@media (max-width: 760px) {
+/* At ≤900px the four nav pills (incl. the long "Bits and Bobs Almanac") no longer
+   fit on one line beside the search bar — measured wrap ceiling is ~836px — so
+   collapse straight to the burger menu instead of letting the bar stack onto two rows. */
+@media (max-width: 900px) {
+  .sf-header { padding-left: 14px; padding-right: 14px; }
+  .sf-nav { padding-left: 16px; padding-right: 12px; }
   .sf-nav__links, .sf-nav__search { display: none; }
-  .sf-nav__icon--search { display: inline-flex; }
   .sf-burger { display: flex; }
 }
 
@@ -54,6 +56,11 @@
 .sf-menu__close { z-index: 1; position: absolute; top: 18px; right: 20px; width: 40px; height: 40px; border: 0; background: none; color: var(--green); font: 28px/1 sans-serif; cursor: pointer; }
 .sf-menu__links { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 14px; }
 .sf-menu__pill { height: 52px; padding: 0 28px; font-size: 18px; gap: 10px; }
+/* Inline searchbar (replaces the old popover trigger); submits to /search and closes the menu.
+   Reuses .sf-nav__search-btn / .sf-nav__search-input; sized to match the menu pills. */
+.sf-menu__search { display: flex; align-items: center; gap: 6px; width: min(320px, 80vw); height: 52px; padding: 0 20px 0 10px; border: 1px solid var(--green); border-radius: 999px; background: var(--white); transition: box-shadow .2s ease; }
+.sf-menu__search:focus-within { box-shadow: 0 0 0 3px rgba(36,88,42,.18); }
+.sf-menu__search .sf-nav__search-input { font-size: 16px; } /* 16px keeps iOS from zooming on focus */
 
 /* Open/close animation: the panel blooms out of the burger's corner (circular clip-path),
    the art scales in, then the links fade up one after another (`--i` set inline).
