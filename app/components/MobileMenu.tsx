@@ -1,7 +1,8 @@
 import {useEffect, useRef, useState} from 'react';
 import {Link} from 'react-router';
 import {useAside} from '~/components/Aside';
-import {CartIcon} from '~/components/Header';
+import {CartIcon, SearchIcon} from '~/components/Header';
+import {SEARCH_ENDPOINT, SearchForm} from '~/components/SearchForm';
 import {ART, NAV_LINKS} from '~/config/shop';
 
 const MENU_ART: Array<{src: string; style: React.CSSProperties}> = [
@@ -20,7 +21,7 @@ const MENU_EXIT_MS = 260;
 
 /** Full-screen menu (≤760px). Opens via useAside().open('mobile'). */
 export function MobileMenu() {
-  const {type, open, close} = useAside();
+  const {type, close} = useAside();
   const isOpen = type === 'mobile';
   const panel = useRef<HTMLDivElement>(null);
   const closeButton = useRef<HTMLButtonElement>(null);
@@ -48,7 +49,7 @@ export function MobileMenu() {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') close();
       if (e.key === 'Tab' && panel.current) {
-        const focusables = panel.current.querySelectorAll<HTMLElement>('a[href], button:not([disabled])');
+        const focusables = panel.current.querySelectorAll<HTMLElement>('a[href], button:not([disabled]), input:not([disabled])');
         const first = focusables[0];
         const last = focusables[focusables.length - 1];
         if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
@@ -89,9 +90,22 @@ export function MobileMenu() {
             {item.label}
           </Link>
         ))}
-        <button type="button" className="sf-pill sf-pill--outline sf-menu__pill" onClick={() => open('search')} style={stagger(NAV_LINKS.length)}>
-          Search
-        </button>
+        <SearchForm
+          action={SEARCH_ENDPOINT}
+          role="search"
+          className="sf-menu__search"
+          onSubmit={close}
+          style={stagger(NAV_LINKS.length)}
+        >
+          {({inputRef}) => (
+            <>
+              <button type="submit" className="sf-nav__search-btn" aria-label="Submit search">
+                <SearchIcon />
+              </button>
+              <input ref={inputRef} type="search" name="q" placeholder="Search" aria-label="Search" className="sf-nav__search-input" autoComplete="off" />
+            </>
+          )}
+        </SearchForm>
         <Link to="/cart" onClick={close} className="sf-pill sf-pill--outline sf-menu__pill" style={stagger(NAV_LINKS.length + 1)}>
           <CartIcon /> Cart
         </Link>

@@ -1,6 +1,9 @@
 import {useRef, useEffect} from 'react';
 import {Form, type FormProps} from 'react-router';
 
+/** The route that renders full search results; searchbars submit here. */
+export const SEARCH_ENDPOINT = '/search';
+
 type SearchFormProps = Omit<FormProps, 'children'> & {
   children: (args: {
     inputRef: React.RefObject<HTMLInputElement>;

@@ -3,8 +3,7 @@ import {Await, Link, NavLink, useAsyncValue} from 'react-router';
 import {type CartViewPayload, useAnalytics, useOptimisticCart} from '@shopify/hydrogen';
 import type {CartApiQueryFragment} from 'storefrontapi.generated';
 import {useAside} from '~/components/Aside';
-import {SearchForm} from '~/components/SearchForm';
-import {SEARCH_ENDPOINT} from '~/components/SearchFormPredictive';
+import {SEARCH_ENDPOINT, SearchForm} from '~/components/SearchForm';
 import {ART, NAV_LINKS, SHOP} from '~/config/shop';
 
 export function CartIcon() {
@@ -17,7 +16,7 @@ export function CartIcon() {
   );
 }
 
-function SearchIcon() {
+export function SearchIcon() {
   return (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <circle cx="11" cy="11" r="7" />
@@ -34,7 +33,7 @@ export function Header({cart}: {cart: Promise<CartApiQueryFragment | null>}) {
         <Link to="/" prefetch="intent" className="sf-nav__logo" aria-label={`${SHOP.name} home`}>
           <img src={ART.logoSmall} alt="" width="56" height="56" />
         </Link>
-        {/* Search bar fills the space between the logo and the nav links (≤760px hides it; the icon below opens the search drawer instead). */}
+        {/* Search bar fills the space between the logo and the nav links. Submitting navigates to /search. Hidden ≤900px, where the mobile menu carries its own searchbar. */}
         <SearchForm action={SEARCH_ENDPOINT} role="search" className="sf-nav__search">
           {({inputRef}) => (
             <>
@@ -54,9 +53,6 @@ export function Header({cart}: {cart: Promise<CartApiQueryFragment | null>}) {
             ))}
           </nav>
           <div className="sf-nav__icons">
-            <button type="button" className="sf-nav__icon sf-nav__icon--search" onClick={() => open('search')} aria-label="Search">
-              <SearchIcon />
-            </button>
             <CartToggle cart={cart} />
           </div>
           <button
