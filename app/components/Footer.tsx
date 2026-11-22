@@ -1,17 +1,18 @@
 import {Link} from 'react-router';
 import {FooterGarden} from '~/components/FooterGarden';
 import {NewsletterForm} from '~/components/NewsletterForm';
+import {WaveDivider} from '~/components/WaveDivider';
 import {ART, BLOGS, SHOP} from '~/config/shop';
 
 export function Footer() {
   return (
     <footer className="sf-footer">
+      <WaveDivider variant="footer" fill="white" />
       <div className="sf-footer__scene">
         <FooterGarden />
         <div className="sf-footgrid pad">
           <div id="footer-newsletter" className="sf-footer__invite">
             <h2>Join the garden party</h2>
-            <p>One letter a week: a craft, a garden note, and a story to tell at dinner.</p>
             <NewsletterForm />
           </div>
           <div className="sf-footer__directory">
@@ -24,6 +25,8 @@ export function Footer() {
             <nav className="sf-footer__col" aria-label="Meet us">
               <h3>Meet us</h3>
               <Link to="/about">About</Link>
+              <Link to="/faq">FAQ</Link>
+              <Link to="/licensing">Licensing</Link>
               <Link to="/policies">Policies</Link>
             </nav>
             <nav className="sf-footer__col" aria-label="Connect">

@@ -1,56 +1,55 @@
 import {useEffect, useRef} from 'react';
 import {ART, SHOP} from '~/config/shop';
 import {heroProgress} from '~/lib/parallax';
-import {HERO_LAYERS, layerTransform} from '~/components/home/heroLayers';
 
 export function Hero() {
-  const hero = useRef<HTMLDivElement>(null);
-  const layers = useRef<Array<HTMLDivElement | null>>([]);
+  const hero = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const el = hero.current;
     if (!el) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    let ticking = false;
-    const apply = () => {
-      ticking = false;
-      const y = window.scrollY || 0;
-      const p = heroProgress(y, el.getBoundingClientRect().bottom + y);
-      HERO_LAYERS.forEach((layer, i) => {
-        const el = layers.current[i];
-        if (el) el.style.transform = layerTransform(layer.kind, p);
-      });
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const y = window.scrollY;
+      el.toggleAttribute('data-scrolled', y > 12);
+      const progress = reducedMotion.matches ? 0 : heroProgress(y, el.getBoundingClientRect().bottom + y);
+      el.style.setProperty('--sun-scale', String(1 + progress * 1.1));
     };
-    const onScroll = () => {
-      if (!ticking) { ticking = true; requestAnimationFrame(apply); }
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(update);
     };
-    window.addEventListener('scroll', onScroll, {passive: true});
-    apply();
-    return () => window.removeEventListener('scroll', onScroll);
+    update();
+    window.addEventListener('scroll', schedule, {passive: true});
+    window.addEventListener('resize', schedule);
+    reducedMotion.addEventListener('change', schedule);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener('scroll', schedule);
+      window.removeEventListener('resize', schedule);
+      reducedMotion.removeEventListener('change', schedule);
+    };
   }, []);
 
   return (
     <section id="hero" className="sf-hero" ref={hero} aria-label={SHOP.tagline}>
-      {HERO_LAYERS.map((layer, i) => (
-        <div
-          key={i} // eslint-disable-line react/no-array-index-key -- static list, never reordered
-          ref={(node) => { layers.current[i] = node; }}
-          className="sf-hero__layer"
-          style={{...layer.style, transform: layerTransform(layer.kind, 0)}}
-        >
-          <img src={layer.src} alt="" style={{rotate: `${layer.rotate}deg`}} />
+      <div className="sf-hero__sky" aria-hidden="true">
+        <div className="sf-hero__clouds sf-hero__clouds--far" />
+        <div className="sf-hero__clouds sf-hero__clouds--near" />
+      </div>
+      <div className="sf-hero__garden" aria-hidden="true">
+        <div className="sf-hero__sun">
+          <img className="sf-hero__sun-disc" src="/art/hero-sun.webp" width={640} height={640} alt="" />
         </div>
-      ))}
+        <img className="sf-hero__landscape" src="/art/hero-sunrise-garden.webp" width={1983} height={793} alt="" loading="eager" fetchPriority="high" />
+      </div>
       <div className="sf-hero__text">
-        <div className="sf-hero__halo halo">
-          <div className="sf-hero__eyebrow">ART · GARDENS · STORIES</div>
-          <div className="sf-hero__wordmark">
-            <div className="sf-hero__wordmark-inner">
-              <img src={ART.wordmarkScript} alt={SHOP.name} />
-              <img src={ART.snail} alt="" className="sf-hero__snail" />
-              <p className="sf-hero__tagline">Into the garden of creativity</p>
-            </div>
-          </div>
+        <div className="sf-hero__eyebrow">ART · GARDENS · STORIES</div>
+        <div className="sf-hero__wordmark">
+          <h1><img src={ART.wordmarkScript} alt={SHOP.name} /></h1>
+          <img src={ART.snail} alt="" className="sf-hero__snail" />
+          <p className="sf-hero__tagline">Into the garden of creativity</p>
         </div>
       </div>
     </section>

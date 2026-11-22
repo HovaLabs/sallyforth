@@ -11,7 +11,8 @@ import {
   useRouteLoaderData,
 } from 'react-router';
 import type {Route} from './+types/root';
-import favicon from '~/assets/favicon.svg';
+import {errorMeta} from '~/lib/seo';
+import {siteOrigin} from '~/lib/site-origin';
 import resetStyles from '~/styles/reset.css?url';
 import appStyles from '~/styles/app.css?url';
 import tokensStyles from '~/styles/tokens.css?url';
@@ -19,6 +20,8 @@ import layoutStyles from '~/styles/layout.css?url';
 import {PageLayout} from './components/PageLayout';
 
 export type RootLoader = typeof loader;
+
+export const meta: Route.MetaFunction = ({error}) => error ? errorMeta(error) : [];
 
 /**
  * This is important to avoid re-fetching root queries on sub-navigations
@@ -62,7 +65,10 @@ export function links() {
       rel: 'preconnect',
       href: 'https://shop.app',
     },
-    {rel: 'icon', type: 'image/svg+xml', href: favicon},
+    {rel: 'icon', sizes: '16x16 32x32 48x48', href: '/favicon.ico'},
+    {rel: 'icon', type: 'image/svg+xml', sizes: 'any', href: '/favicon.svg'},
+    {rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png'},
+    {rel: 'describedby', type: 'text/plain', href: '/llms.txt'},
   ];
 }
 
@@ -78,6 +84,7 @@ export async function loader(args: Route.LoaderArgs) {
   return {
     ...deferredData,
     ...criticalData,
+    siteOrigin: siteOrigin(args.request, env),
     publicStoreDomain: env.PUBLIC_STORE_DOMAIN,
     shop: getShopAnalytics({
       storefront,

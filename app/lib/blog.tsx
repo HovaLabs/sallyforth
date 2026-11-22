@@ -1,8 +1,11 @@
-import {type RouterContextProvider} from 'react-router';
+import {redirect, type RouterContextProvider} from 'react-router';
 import {getPaginationVariables} from '@shopify/hydrogen';
 import type {PrettyBlogQuery, PrettyArticleQuery} from 'storefrontapi.generated';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
-import {BLOGS} from '~/config/shop';
+import {SHOP} from '~/config/shop';
+import {blogConfig} from '~/components/blog/blogConfig';
+import {excerptFromHtml} from '~/components/blog/format';
+import type {pageMeta} from '~/lib/seo';
 
 /**
  * Shared blog loaders used by the pretty blog routes (`/blog`,
@@ -27,10 +30,74 @@ type PrettyArticle = NonNullable<
  * the default `/blogs/:handle` route.
  */
 export function blogPathForHandle(handle: string): string {
-  const configured = (BLOGS as Record<string, {path: string} | undefined>)[
-    handle
-  ];
-  return configured?.path ?? `/blogs/${handle}`;
+  return blogConfig(handle)?.path ?? `/blogs/${encodeURIComponent(handle)}`;
+}
+
+export function redirectBrandedBlog(request: Request, handle: string, articleHandle?: string) {
+  const path = blogConfig(handle)?.path;
+  if (path) {
+    const article = articleHandle ? `/${encodeURIComponent(articleHandle)}` : '';
+    throw redirect(path + article + new URL(request.url).search, 301);
+  }
+}
+
+export function blogSeo(blog: PrettyBlog | undefined, handle: string): Parameters<typeof pageMeta>[1] {
+  const config = blogConfig(handle);
+  const title = config?.title ?? blog?.title ?? 'Blog';
+  const path = blogPathForHandle(handle);
+  return {
+    title: blog?.seo?.title || title,
+    description: blog?.seo?.description || config?.tagline ||
+      `Read the latest posts from ${title} at ${SHOP.name}.`,
+    card: handle === SHOP.handles.almanac ? 'almanac' : 'blog',
+    pageType: 'CollectionPage',
+    paginated: true,
+    entity: blog && ((_url, origin) => ({
+      '@type': 'Blog',
+      '@id': `${origin}${path}#blog`,
+      name: title,
+      url: `${origin}${path}`,
+      publisher: {'@id': `${origin}/#organization`},
+      blogPost: blog.articles.nodes.map((article) => ({
+        '@type': 'BlogPosting',
+        '@id': `${origin}${path}/${encodeURIComponent(article.handle)}#article`,
+        headline: article.title,
+      })),
+    })),
+  };
+}
+
+export function articleSeo(article: PrettyArticle | undefined, handle: string): Parameters<typeof pageMeta>[1] {
+  const blogName = blogConfig(handle)?.title ?? article?.blog.title ?? 'Blog';
+  const blogPath = blogPathForHandle(handle);
+  const byline = article?.author?.name?.trim();
+  const description = article?.seo?.description || article?.excerpt ||
+    excerptFromHtml(article?.contentHtml) || `Read ${article?.title || 'the latest story'} in ${blogName}.`;
+  return {
+    title: article?.seo?.title || article?.title || 'Article',
+    description,
+    type: 'article',
+    card: handle === SHOP.handles.almanac ? 'almanac' : 'blog',
+    image: article?.image ?? undefined,
+    publishedTime: article?.publishedAt,
+    author: byline,
+    breadcrumbs: [{name: blogName, path: blogPath}],
+    entity: article && ((url, origin) => ({
+      '@type': 'BlogPosting',
+      '@id': `${url}#article`,
+      url,
+      headline: article.title,
+      description,
+      datePublished: article.publishedAt,
+      image: article.image?.url,
+      author: byline?.toLowerCase() === SHOP.name.toLowerCase()
+        ? {'@id': `${origin}/#organization`}
+        : byline ? {'@type': 'Person', name: byline} : undefined,
+      publisher: {'@id': `${origin}/#organization`},
+      isPartOf: {'@id': `${origin}${blogPath}#blog`},
+      mainEntityOfPage: {'@id': `${url}#webpage`},
+    })),
+  };
 }
 
 export async function loadBlogArticles(
@@ -147,6 +214,8 @@ const ARTICLE_QUERY = `#graphql
       articleByHandle(handle: $articleHandle) {
         handle
         title
+        excerpt
+        blog { title }
         contentHtml
         publishedAt
         author: authorV2 {

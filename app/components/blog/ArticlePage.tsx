@@ -28,7 +28,7 @@ export function ArticlePage({article, blogHandle, more}: {article: PrettyArticle
         <div className="sf-wrap">
           <div className="sf-article__head-inner">
             <div className="sf-eyebrow">
-              <Link to={basePath}>{blogTitle}</Link> · {formatDate(article.publishedAt)}
+              <Link to={basePath}>{blogTitle}</Link> · <time dateTime={article.publishedAt}>{formatDate(article.publishedAt)}</time>
             </div>
             <h1 className="sf-article__title">{article.title}</h1>
             {article.author?.name ? <p className="sf-article__byline">by {article.author.name}</p> : null}

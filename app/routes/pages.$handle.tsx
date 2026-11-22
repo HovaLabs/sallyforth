@@ -1,9 +1,17 @@
 import {useLoaderData} from 'react-router';
 import type {Route} from './+types/pages.$handle';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
+import {excerptFromHtml} from '~/components/blog/format';
+import {pageMeta} from '~/lib/seo';
+import {hasPageContent} from '~/lib/page-content';
 
-export const meta: Route.MetaFunction = ({data}) => {
-  return [{title: `Hydrogen | ${data?.page.title ?? ''}`}];
+export const meta: Route.MetaFunction = (args) => {
+  const page = args.data?.page;
+  return pageMeta(args, {
+    title: page?.seo?.title || page?.title || 'Page',
+    description: page?.seo?.description || excerptFromHtml(page?.body) || `${page?.title || 'Information'} from SallyForth.`,
+    noindex: !hasPageContent(page?.body),
+  });
 };
 
 export async function loader(args: Route.LoaderArgs) {
@@ -62,7 +70,7 @@ export default function Page() {
       <header>
         <h1>{page.title}</h1>
       </header>
-      <main dangerouslySetInnerHTML={{__html: page.body}} />
+      <div dangerouslySetInnerHTML={{__html: page.body}} />
     </div>
   );
 }

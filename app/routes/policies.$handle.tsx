@@ -1,25 +1,28 @@
 import {Link, useLoaderData} from 'react-router';
 import type {Route} from './+types/policies.$handle';
-import {type Shop} from '@shopify/hydrogen/storefront-api-types';
+import {excerptFromHtml} from '~/components/blog/format';
+import {pageMeta} from '~/lib/seo';
 
-type SelectedPolicies = keyof Pick<
-  Shop,
-  'privacyPolicy' | 'shippingPolicy' | 'termsOfService' | 'refundPolicy'
->;
+const policyHandles = {
+  'privacy-policy': 'privacyPolicy', 'shipping-policy': 'shippingPolicy',
+  'terms-of-service': 'termsOfService', 'refund-policy': 'refundPolicy',
+  'subscription-policy': 'subscriptionPolicy',
+} as const;
 
-export const meta: Route.MetaFunction = ({data}) => {
-  return [{title: `Hydrogen | ${data?.policy.title ?? ''}`}];
+export const meta: Route.MetaFunction = (args) => {
+  const policy = args.data?.policy;
+  return pageMeta(args, {
+    title: policy?.title || 'Store policy',
+    description: excerptFromHtml(policy?.body) || `Read the SallyForth ${policy?.title ?? 'store policy'}.`,
+    card: 'shop', breadcrumbs: [{name: 'Store policies', path: '/policies'}],
+  });
 };
 
 export async function loader({params, context}: Route.LoaderArgs) {
-  if (!params.handle) {
-    throw new Response('No handle was passed in', {status: 404});
+  if (!Object.hasOwn(policyHandles, params.handle)) {
+    throw new Response('Policy not found', {status: 404});
   }
-
-  const policyName = params.handle.replace(
-    /-([a-z])/g,
-    (_: unknown, m1: string) => m1.toUpperCase(),
-  ) as SelectedPolicies;
+  const policyName = policyHandles[params.handle as keyof typeof policyHandles];
 
   const data = await context.storefront.query(POLICY_CONTENT_QUERY, {
     variables: {
@@ -27,6 +30,7 @@ export async function loader({params, context}: Route.LoaderArgs) {
       shippingPolicy: false,
       termsOfService: false,
       refundPolicy: false,
+      subscriptionPolicy: false,
       [policyName]: true,
       language: context.storefront.i18n?.language,
     },
@@ -74,6 +78,7 @@ const POLICY_CONTENT_QUERY = `#graphql
     $refundPolicy: Boolean!
     $shippingPolicy: Boolean!
     $termsOfService: Boolean!
+    $subscriptionPolicy: Boolean!
   ) @inContext(language: $language, country: $country) {
     shop {
       privacyPolicy @include(if: $privacyPolicy) {
@@ -87,6 +92,12 @@ const POLICY_CONTENT_QUERY = `#graphql
       }
       refundPolicy @include(if: $refundPolicy) {
         ...Policy
+      }
+      subscriptionPolicy @include(if: $subscriptionPolicy) {
+        id
+        handle
+        title
+        body
       }
     }
   }

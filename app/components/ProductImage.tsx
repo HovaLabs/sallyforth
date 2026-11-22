@@ -3,20 +3,22 @@ import {Image} from '@shopify/hydrogen';
 
 export function ProductImage({
   image,
+  title,
 }: {
   image: ProductVariantFragment['image'];
+  title: string;
 }) {
   if (!image) {
-    return <div className="product-image" />;
+    return null;
   }
   return (
     <div className="product-image">
       <Image
-        alt={image.altText || 'Product Image'}
-        aspectRatio="1/1"
+        alt={image.altText || title}
         data={image}
         key={image.id}
-        sizes="(min-width: 45em) 50vw, 100vw"
+        loading="eager"
+        sizes="(min-width: 1350px) 585px, (min-width: 761px) 45vw, (min-width: 480px) 420px, 90vw"
       />
     </div>
   );

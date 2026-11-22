@@ -5,9 +5,23 @@ import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
 import {ProductItem} from '~/components/ProductItem';
 import type {ProductItemFragment} from 'storefrontapi.generated';
+import {pageMeta} from '~/lib/seo';
+import {listingEntity} from '~/lib/listing-seo';
 
-export const meta: Route.MetaFunction = ({data}) => {
-  return [{title: `Hydrogen | ${data?.collection.title ?? ''} Collection`}];
+export const meta: Route.MetaFunction = (args) => {
+  const collection = args.data?.collection;
+  return pageMeta(args, {
+    title: collection?.seo?.title || collection?.title || 'Collection',
+    description: collection?.seo?.description || collection?.description || `Browse ${collection?.title || 'this collection'} in the SallyForth shop.`,
+    card: 'shop',
+    pageType: 'CollectionPage',
+    paginated: true,
+    image: collection?.image ?? undefined,
+    breadcrumbs: [{name: 'Collections', path: '/collections'}],
+    entity: listingEntity((collection?.products.nodes ?? []).map((product) => ({
+      name: product.title, path: `/products/${product.handle}`,
+    }))),
+  });
 };
 
 export async function loader(args: Route.LoaderArgs) {
@@ -140,6 +154,8 @@ const COLLECTION_QUERY = `#graphql
       handle
       title
       description
+      seo { title description }
+      image { url altText width height }
       products(
         first: $first,
         last: $last,

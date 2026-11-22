@@ -2,12 +2,12 @@ import {useLoaderData} from 'react-router';
 import type {Route} from './+types/bits-and-bobs-almanac._index';
 import blogStyles from '~/styles/blog.css?url';
 import {SHOP} from '~/config/shop';
-import {loadBlogArticles} from '~/lib/blog';
+import {loadBlogArticles, blogSeo} from '~/lib/blog';
+import {pageMeta} from '~/lib/seo';
 import {BlogIndex} from '~/components/blog/BlogIndex';
 
-export const meta: Route.MetaFunction = ({data}) => {
-  return [{title: `${SHOP.name} | ${data?.blog.title ?? 'Bits and Bobs Almanac'}`}];
-};
+export const meta: Route.MetaFunction = (args) =>
+  pageMeta(args, blogSeo(args.data?.blog, SHOP.handles.almanac));
 
 export const links: Route.LinksFunction = () => [{rel: 'stylesheet', href: blogStyles}];
 

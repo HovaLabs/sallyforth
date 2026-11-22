@@ -7,7 +7,7 @@ import {ART, SHOP} from '~/config/shop';
 import {blogPathForHandle} from '~/lib/blog';
 import {DEFAULT_BLOG_ART, blogConfig} from './blogConfig';
 import {formatDate} from './format';
-import {SweetPeaVine} from './SweetPeaVine';
+import {HeroPeaVine, SweetPeaVine} from './SweetPeaVine';
 import {PostCard, postExcerpt} from './PostCard';
 
 type PrettyBlog = NonNullable<PrettyBlogQuery['blog']>;
@@ -68,24 +68,6 @@ export function BlogIndex({blog}: {blog: PrettyBlog}) {
         </section>
       ) : null}
     </div>
-  );
-}
-
-function HeroPeaVine() {
-  return (
-    <svg className="sf-hero-pea" viewBox="0 0 340 68" aria-hidden="true" focusable="false">
-      <path className="sf-hero-pea__stem" pathLength="1" fill="none" stroke="#647745" strokeWidth="2.5" strokeLinecap="round"
-        d="M8 48 C43 56 48 24 80 32 S127 58 158 39 S199 15 228 30 S270 55 299 29 C321 8 336 15 329 25 C324 32 316 28 320 23" />
-      {[[55, 37, -20], [107, 42, 155], [158, 39, -22], [210, 24, 150], [272, 43, -28]].map(([x, y, angle], index) => (
-        <g key={x} transform={`translate(${x} ${y}) rotate(${angle})`}>
-          <g className="sf-hero-pea__leaves" style={{animationDelay: `${0.3 + index * 0.36}s`}}>
-            <path d="M0 0 Q-12 -4 -12 -16 Q0 -13 0 0" fill="#83965f" />
-            <path d="M0 0 Q0 -15 14 -20 Q15 -6 0 0" fill="#a1ad72" />
-            <path d="M0 0 L10 -15 M0 0 L-8 -11" fill="none" stroke="#647745" strokeWidth="1" />
-          </g>
-        </g>
-      ))}
-    </svg>
   );
 }
 

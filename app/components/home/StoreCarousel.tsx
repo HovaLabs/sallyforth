@@ -13,7 +13,7 @@ export function StoreCarousel({featured}: {featured: Promise<HomeFeaturedQuery |
       <img className="sf-art" src={ART.eggplant} alt="" style={{right: -130, top: -20, width: 240, transform: 'rotate(20deg)'}} />
       <WaveDivider variant="store" fill="cream" />
       <div className="sf-section-head pad" style={{margin: '0 0 24px'}}>
-        <span className="sf-section-title">The Store</span>
+        <h2 className="sf-section-title">The Store</h2>
         <Link to="/collections/all" className="sf-italic-link">Browse everything</Link>
       </div>
       <p className="sf-store__intro pad">Hand-painted goods, crated up and shipped with care · scroll →</p>

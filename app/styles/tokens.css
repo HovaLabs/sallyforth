@@ -1,4 +1,20 @@
 /* ---- Fonts (self-hosted) ---- */
+@font-face {
+  font-family: 'Explora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/explora-latin.woff2') format('woff2');
+}
+
+/* Allison (OFL, see /fonts/allison-OFL.txt): handwritten script for the footer sign-off */
+@font-face { font-family: 'Allison'; font-style: normal; font-weight: 400; font-display: swap;
+  src: url('/fonts/allison-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: 'Allison'; font-style: normal; font-weight: 400; font-display: swap;
+  src: url('/fonts/allison-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+
 /* Fraunces variable font (wght 100-900, opsz 9-144) for titles */
 @font-face { font-family: 'Fraunces'; font-style: normal; font-weight: 100 900; font-display: swap;
   src: url('/fonts/fraunces-latin-ext.woff2') format('woff2');
@@ -38,6 +54,7 @@
   --rule: #7A96C3;
   --font-display: 'Fraunces', Georgia, serif;
   --font-body: 'Figtree', system-ui, sans-serif;
+  --font-script: 'Allison', 'Snell Roundhand', cursive;
   --prose-size: 17px;
   --prose-leading: 1.75;
   --pad-x: 64px;
@@ -52,14 +69,44 @@ a:focus-visible, button:focus-visible, input:focus-visible { outline: 3px solid 
 img { max-width: none; } /* app.css sets img{max-width:100%}; the art layers rely on fixed widths */
 
 /* ---- Utilities ---- */
-.sf-pill { display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; font-family: var(--font-body); letter-spacing: .02em; line-height: 1; cursor: pointer; border: 1px solid transparent; transition: filter .15s; }
-.sf-pill:hover { filter: brightness(1.12); }
+.sf-pill { display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; font-family: var(--font-body); letter-spacing: .02em; line-height: 1; cursor: pointer; border: 1px solid transparent; }
 .sf-pill--red { background: var(--red); border-color: var(--red); color: var(--white); }
-.sf-pill--rust { background: var(--rust); border-color: var(--rust); color: var(--white); }
+.sf-pill--rust { --pill-edge: var(--rust); background: var(--rust); border-color: var(--rust); color: var(--white); }
 .sf-pill--green { background: var(--green); border-color: var(--green); color: var(--white); }
-.sf-pill--olive { background: var(--olive); border-color: var(--olive); color: var(--white); }
+.sf-pill--olive { --pill-edge: var(--olive); background: var(--olive); border-color: var(--olive); color: var(--white); }
 .sf-pill--outline { background: transparent; border-color: var(--green); color: var(--green); }
+
+/* The face lifts from a cream base edged in the button's ink. */
+:where(.sf-pill--red, .sf-blog__cta, .sf-posts__cta, .sf-card__button, .sf-cart-summary__checkout, .sf-cart-empty__cta) { --pill-edge: var(--red); }
+@media (prefers-reduced-motion: no-preference) {
+  :where(
+    .sf-pill:not(.sf-nav__pill), .sf-skip, .sf-blog__cta, .sf-posts__cta,
+    .sf-card__button, .product-options-item, .sf-cart-summary__checkout, .sf-cart-empty__cta
+  ):not(:disabled) {
+    --pill-lift: 0px;
+    position: relative;
+    transform: translateY(calc(-1 * var(--pill-lift)));
+    box-shadow: 0 calc(var(--pill-lift) * .67) 0 var(--cream), 0 var(--pill-lift) 0 var(--pill-edge, var(--green));
+    transition: transform .16s ease-out, box-shadow .16s ease-out, background-color .15s, border-color .15s, color .15s;
+
+    /* Keep the lower edge clickable as the face rises away from the pointer. */
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0 0 calc(-1px - var(--pill-lift));
+      border-radius: inherit;
+    }
+    &:focus-visible { --pill-lift: 3px; }
+    @media (hover: hover) {
+      &:hover { --pill-lift: 3px; text-decoration: none; }
+    }
+    @media (hover: none) and (pointer: coarse) {
+      --pill-lift: 3px;
+    }
+    &:active { --pill-lift: 0px; }
+  }
+}
 .sf-eyebrow { font: 700 11px var(--font-body); letter-spacing: .3em; color: var(--green); text-transform: uppercase; }
-.sf-section-title { font: 34px var(--font-display); color: var(--green); }
+.sf-section-title { margin: 0; font: 34px var(--font-display); color: var(--green); }
 .sf-italic-link { font: italic 14px var(--font-body); color: var(--green); border-bottom: 1px solid var(--green); }
 .sf-hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }

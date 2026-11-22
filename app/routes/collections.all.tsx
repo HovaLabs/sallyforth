@@ -4,10 +4,19 @@ import {getPaginationVariables, Image, Money} from '@shopify/hydrogen';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
 import {ProductItem} from '~/components/ProductItem';
 import type {CollectionItemFragment} from 'storefrontapi.generated';
+import {pageMeta} from '~/lib/seo';
+import {listingEntity} from '~/lib/listing-seo';
 
-export const meta: Route.MetaFunction = () => {
-  return [{title: `Hydrogen | Products`}];
-};
+export const meta: Route.MetaFunction = (args) => pageMeta(args, {
+  title: 'Shop Hand-Painted Goods',
+  description: 'Browse the SallyForth store for art prints, garden kits, and illustrated goods inspired by the vegetable patch.',
+  card: 'shop',
+  pageType: 'CollectionPage',
+  paginated: true,
+  entity: listingEntity((args.data?.products.nodes ?? []).map(({title, handle}) => ({
+    name: title, path: `/products/${encodeURIComponent(handle)}`,
+  }))),
+});
 
 export async function loader(args: Route.LoaderArgs) {
   // Start fetching non-critical data without blocking time to first byte

@@ -8,23 +8,67 @@
 .sf-frame__inner { overflow-x: clip; position: relative; isolation: isolate; }
 
 /* ---- Header ---- */
-.sf-header { position: sticky; top: 0; z-index: 20; padding: 14px 24px; background: rgba(255,255,255,.72); backdrop-filter: saturate(1.2) blur(10px); -webkit-backdrop-filter: saturate(1.2) blur(10px); }
+/* Only the rounded .sf-nav bar has a surface; the sticky wrapper around it stays transparent. */
+.sf-header { position: sticky; top: 0; z-index: 20; padding: 14px 24px; }
 /* Rounded floating bar: a contained card with a soft green border + drop shadow. */
 .sf-nav { display: flex; align-items: center; justify-content: space-between; gap: 16px; box-sizing: border-box; max-width: var(--content-max); margin-inline: auto; padding: 8px 16px 8px 22px; background: var(--cream); border: 1px solid rgba(36,88,42,.16); border-radius: 26px; box-shadow: 0 10px 26px rgba(36,88,42,.10); }
 /* Home page: lift the bar out of flow so the green hero runs to the very top and
    the bar floats over it (no white band). Other pages keep the sticky header. */
-.sf-frame__inner:has(.sf-home) > .sf-header { position: fixed; left: 0; right: 0; background: transparent; backdrop-filter: none; -webkit-backdrop-filter: none; }
+.sf-frame__inner:has(.sf-home) > .sf-header { position: fixed; left: 0; right: 0; }
+.sf-frame__inner:has(.sf-home .sf-hero:not([data-scrolled])) > .sf-header .sf-nav {
+  background-color: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+/* Unscrolled home: the bar is transparent over the hero art, so give each link a
+   white pill to stay legible. The highlighted link drops it so the sliding green
+   highlight (which sits behind the links) shows through. */
+.sf-frame__inner:has(.sf-home .sf-hero:not([data-scrolled])) > .sf-header :is(.sf-nav__pill, .sf-nav__icon) {
+  background-color: var(--white);
+}
+/* The searchbar matches: an opaque white fill against the art (elsewhere it's a faint green tint). */
+.sf-frame__inner:has(.sf-home .sf-hero:not([data-scrolled])) > .sf-header .sf-nav__search {
+  background-color: var(--white);
+}
+.sf-frame__inner:has(.sf-home .sf-hero:not([data-scrolled])) > .sf-header .sf-nav__icon:hover {
+  background-color: #e9eee9; /* the usual faint-green hover tint, made opaque over the art */
+}
+.sf-frame__inner:has(.sf-home .sf-hero:not([data-scrolled])) > .sf-header .sf-nav__pill[data-highlighted="true"] {
+  background-color: transparent;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .sf-frame__inner:has(.sf-home) > .sf-header .sf-nav {
+    transition: background-color .18s ease, border-color .18s ease, box-shadow .18s ease;
+  }
+}
 .sf-nav__logo img { height: 56px; width: auto; display: block; }
 .sf-nav__right { flex: none; display: flex; align-items: center; gap: 8px; }
 .sf-nav__icons { display: flex; align-items: center; gap: 4px; }
-.sf-nav__links { position: relative; isolation: isolate; display: flex; gap: 8px; flex-wrap: nowrap; justify-content: flex-end; align-items: center; }
+.sf-nav__links { --nav-lift: 0px; position: relative; isolation: isolate; display: flex; gap: 8px; flex-wrap: nowrap; justify-content: flex-end; align-items: center; }
 /* One shared pill slides between hovered, focused, and current-page links. */
 .sf-nav__pill { position: relative; height: 36px; padding: 0 18px; font-size: 16px; font-weight: 400; white-space: nowrap; color: var(--green); transition: color .18s; }
-.sf-nav__highlight { position: absolute; z-index: -1; left: 0; top: 0; height: 100%; border-radius: 999px; background: var(--green); pointer-events: none; opacity: 0; transition: transform .3s cubic-bezier(.22, 1, .36, 1), width .3s cubic-bezier(.22, 1, .36, 1), opacity .18s; }
+.sf-nav__highlight {
+  position: absolute; z-index: -1; left: 0; top: 0; height: 100%; border-radius: 999px;
+  background: var(--green); pointer-events: none; opacity: 0;
+  translate: 0 calc(-1 * var(--nav-lift));
+  box-shadow: 0 calc(var(--nav-lift) * .67) var(--cream), 0 var(--nav-lift) var(--green);
+  transition: transform .3s cubic-bezier(.22, 1, .36, 1), width .3s cubic-bezier(.22, 1, .36, 1), opacity .18s, translate .16s ease-out, box-shadow .16s ease-out;
+}
 .sf-nav__pill[data-highlighted="true"] { color: var(--white); }
 .sf-nav__pill:hover { filter: none; text-decoration: none; }
+.sf-nav__pill > span { transition: translate .16s ease-out; }
+.sf-nav__pill[data-highlighted="true"] > span { translate: 0 calc(-1 * var(--nav-lift)); }
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .sf-nav__links:has(.sf-nav__pill[data-highlighted="true"]:hover:not(:active)) { --nav-lift: 3px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .sf-nav__links:has(.sf-nav__pill[data-highlighted="true"]:focus-visible:not(:active)) { --nav-lift: 3px; }
+}
+@media (hover: none) and (pointer: coarse) and (prefers-reduced-motion: no-preference) {
+  .sf-nav__links:has(.sf-nav__pill[data-highlighted="true"]:not(:active)) { --nav-lift: 3px; }
+}
 @media (prefers-reduced-motion: reduce) {
-  .sf-nav__highlight, .sf-nav__pill { transition: none; }
+  .sf-nav__highlight, .sf-nav__pill, .sf-nav__pill > span { transition: none; }
 }
 .sf-nav__icon { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 999px; color: var(--green); background: none; border: 0; cursor: pointer; transition: background .15s; }
 .sf-nav__icon:hover { background: rgba(36,88,42,.08); }
@@ -33,7 +77,7 @@
 .sf-burger span { display: block; width: 24px; height: 2px; background: var(--green); }
 
 /* ---- Search fills the remaining space between the logo and desktop links. ---- */
-.sf-nav__search { display: flex; flex: 1; min-width: 0; max-width: none; margin: 0; align-items: center; gap: 4px; height: 36px; padding: 0 14px 0 6px; border: 1px solid var(--green); border-radius: 999px; background: var(--white); transition: box-shadow .2s ease; }
+.sf-nav__search { display: flex; flex: 1; min-width: 0; max-width: none; margin: 0; align-items: center; gap: 4px; height: 36px; padding: 0 14px 0 6px; border: 1px solid transparent; border-radius: 999px; background: rgba(36,88,42,.08); transition: box-shadow .2s ease; }
 .sf-nav__search:focus-within { box-shadow: 0 0 0 3px rgba(36,88,42,.18); }
 .sf-nav__search-input { flex: 1; min-width: 0; margin: 0; padding: 0; border: 0; border-radius: 0; background: none; color: var(--green); font: 14px var(--font-body); appearance: none; -webkit-appearance: none; }
 .sf-nav__search-input::placeholder { color: var(--green); opacity: .6; font-style: italic; }
@@ -59,7 +103,7 @@
 .sf-menu__pill { height: 52px; padding: 0 28px; font-size: 18px; gap: 10px; }
 /* Inline searchbar (replaces the old popover trigger); submits to /search and closes the menu.
    Reuses .sf-nav__search-btn / .sf-nav__search-input; sized to match the menu pills. */
-.sf-menu__search { display: flex; align-items: center; gap: 6px; width: min(320px, 80vw); height: 52px; padding: 0 20px 0 10px; border: 1px solid var(--green); border-radius: 999px; background: var(--white); transition: box-shadow .2s ease; }
+.sf-menu__search { display: flex; align-items: center; gap: 6px; width: min(320px, 80vw); height: 52px; padding: 0 20px 0 10px; border: 1px solid transparent; border-radius: 999px; background: rgba(36,88,42,.08); transition: box-shadow .2s ease; }
 .sf-menu__search:focus-within { box-shadow: 0 0 0 3px rgba(36,88,42,.18); }
 .sf-menu__search .sf-nav__search-input { font-size: 16px; } /* 16px keeps iOS from zooming on focus */
 
@@ -129,12 +173,21 @@
 @media (max-width: 900px) { .sf-art { display: none; } }
 
 /* ---- Footer ---- */
+/* Leave room for the crest on pages without a padded closing section. */
+:where(main > :is(.page, .policies, .policy, .search, .blogs, .blog, .article, .collections, .collection)) {
+  padding-bottom: 48px;
+}
 .sf-footer {
   --footer-ink: var(--green);
   --footer-paper: var(--white);
   --footer-cloud-art: url("/art/footer-cloud-bank.webp");
+  position: relative;
   background: var(--footer-paper);
   color: var(--footer-ink);
+}
+.sf-footer > .sf-wave {
+  pointer-events: none;
+  filter: drop-shadow(0 -1px 1px rgb(36 88 42 / .1));
 }
 .sf-footer a { color: inherit; }
 .sf-footer__scene {
@@ -167,6 +220,21 @@
 .sf-footer-garden__oak, .sf-footer-garden__branch { position: absolute; height: auto; }
 .sf-footer-garden__oak { left: 49.739583%; top: 42.65625%; width: 23.958333%; transform-origin: 50% 91.5%; }
 .sf-footer-garden__branch { left: 75%; top: -.625%; width: 25.416667%; transform-origin: 98.36% 17.1%; }
+/* Wider screens: the branch hangs from the footer top and reaches up into the 60px
+   wave divider. The canopy starts at the wave's top and is masked to the wave's
+   shape (same path as WaveDivider "footer") plus everything below it, so the
+   only edge the branch ever shows is the wavy line. The branch starts a few px
+   above the canopy so its sway never brings its flat top edge into view. */
+.sf-footer-canopy {
+  position: absolute; z-index: 0; left: 0; right: 0; top: -60px; height: 60vw;
+  pointer-events: none; overflow: hidden;
+  /* A real file, not a data: URI — the site CSP blocks data: images. Same path as WaveDivider "footer". */
+  --wave-mask: url("/art/masks/footer-wave.svg");
+  -webkit-mask: var(--wave-mask) 0 0 / 100% 60px no-repeat, linear-gradient(#000 0 0) 0 60px / 100% 100% no-repeat;
+  mask: var(--wave-mask) 0 0 / 100% 60px no-repeat, linear-gradient(#000 0 0) 0 60px / 100% 100% no-repeat;
+}
+.sf-footer-canopy .sf-footer-garden__branch { top: -12px; }
+.sf-footer-garden__branch--inset { display: none; }
 
 @media (prefers-reduced-motion: no-preference) {
   .sf-footer-garden__clouds { animation: sf-garden-wind 210s linear infinite; }
@@ -200,32 +268,58 @@
   padding-right: max(26%, var(--pad-x));
 }
 .sf-footer__directory { display: contents; }
-.sf-footer__invite h2 { margin: 0 0 10px; font: 450 clamp(25px, 2.4vw, 36px)/1.05 var(--font-display); letter-spacing: -.035em; }
-.sf-footer__invite > p { max-width: 33ch; margin: 0 0 14px; font: 14px/1.55 var(--font-body); }
+.sf-footer__invite h2 { margin: 0 0 18px; font: 450 clamp(25px, 2.4vw, 36px)/1.05 var(--font-display); letter-spacing: -.035em; }
 .sf-footer__col { display: grid; justify-items: start; align-content: start; }
 .sf-footer__col h3 { margin: 3px 0 13px; font: 650 15px/1.3 var(--font-body); }
 .sf-footer__col a { padding-block: 5px; font: 14px/1.35 var(--font-body); }
 .sf-footer a:hover { text-decoration: underline; text-underline-offset: 3px; }
 .sf-footer :focus-visible { outline: 2px solid var(--footer-ink); outline-offset: 3px; }
-.sf-newsletter { display: flex; flex-wrap: wrap; max-width: 32ch; }
-.sf-newsletter__input, .sf-newsletter__button {
-  box-sizing: border-box;
+.sf-newsletter { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; max-width: 26rem; }
+.sf-newsletter__label { font: 600 14px/1.4 var(--font-body); }
+.sf-newsletter__field {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 5px 5px 16px;
+  border-radius: 999px;
+  background: #e2ebdb;
+}
+.sf-newsletter__input {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  padding: 10px 0;
   border: 0;
-  border-bottom: 1px solid currentColor;
-  border-radius: 0;
   background: transparent;
   color: var(--footer-ink);
+  font: 16px/1.4 var(--font-body);
 }
-.sf-newsletter__input { margin: 0; flex: 1; min-width: 0; padding: 10px 4px 10px 0; font: 14px var(--font-body); }
-.sf-newsletter__input::placeholder { color: var(--footer-ink); opacity: 1; }
-.sf-newsletter__button { padding: 10px 0 10px 12px; font: 700 11px var(--font-body); letter-spacing: .08em; cursor: pointer; }
-.sf-newsletter__button:disabled { opacity: .65; cursor: default; }
-.sf-newsletter__error, .sf-newsletter__done { margin: 8px 0 0; font: 14px/1.4 var(--font-body); flex-basis: 100%; }
+.sf-newsletter__input::placeholder { color: var(--olive); opacity: 1; }
+.sf-newsletter__field:has(input:focus-visible) { outline: 2px solid var(--footer-ink); outline-offset: 2px; }
+.sf-newsletter__input:focus-visible { outline: none; }
+.sf-newsletter__button {
+  flex: none;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 0;
+  font: 600 14px/1 var(--font-body);
+  letter-spacing: normal;
+}
+.sf-newsletter__button span { font-size: 18px; }
+.sf-newsletter__button:disabled { opacity: .7; cursor: default; }
+.sf-newsletter__note, .sf-newsletter__error, .sf-newsletter__done { margin: 0; font: 14px/1.5 var(--font-body); }
 .sf-newsletter__error { color: var(--red); }
 /* Sign-off + copyright sit in the scene flow, above the garden art. */
 .sf-footer__signoff, .sf-footcopy { position: relative; }
 .sf-footer__signoff { padding: clamp(24px, 3vw, 50px) 0 16px; text-align: center; }
-.sf-footer__quote { margin: 0; font: 400 max(32px, 4.6vw)/1.15 "Snell Roundhand", "Segoe Script", "Brush Script MT", cursive; text-wrap: balance; }
+.sf-footer__quote {
+  margin: 0;
+  padding-inline: 1rem;
+  font: 400 clamp(3.25rem, 6.4vw, 6.25rem)/1.05 var(--font-script);
+  -webkit-text-stroke: .024em currentColor;
+  text-wrap: balance;
+}
 .sf-footer__snail { display: block; width: clamp(28px, 3vw, 46px); margin: 10px auto 0; }
 .sf-footcopy { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px 20px; padding-block: 12px 20px; font: 12px/1.5 var(--font-body); }
 @media (max-width: 850px) {
@@ -237,6 +331,8 @@
   }
   .sf-footer__scene { padding-bottom: 49vw; }
   .sf-footer-garden__art { mask-image: linear-gradient(to bottom, transparent 8%, black 38%); }
+  .sf-footer-canopy { display: none; }
+  .sf-footer-garden__branch--inset { display: block; }
 }
 @media (max-width: 480px) {
   .sf-footer__col h3 { margin-bottom: 7px; }

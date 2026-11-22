@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="168" height="168" viewBox="0 0 168 168" opacity=".55">
+  <defs>
+    <pattern id="weave" width="4" height="4" patternUnits="userSpaceOnUse">
+      <path d="M.5 0v4M2.5 0v4" stroke="#536476" stroke-opacity=".16" stroke-width=".6"/>
+      <path d="M0 1h4M0 3h4" stroke="#fffdf5" stroke-opacity=".3" stroke-width=".7"/>
+      <path d="M.8 1v1.6m2 .4v1.6" stroke="#fffdf5" stroke-opacity=".42" stroke-width=".8"/>
+    </pattern>
+    <filter id="fibers" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency=".55 .83" numOctaves="2" stitchTiles="stitch"/>
+      <feColorMatrix type="saturate" values="0"/>
+    </filter>
+  </defs>
+  <rect width="168" height="168" fill="#e9e7e2"/>
+  <!-- Small variations along the dyed bands follow the warp and weft of the cloth. -->
+  <g fill="#75899e">
+    <path opacity=".48" d="M17 0c.6 26-.7 58-.1 85s.6 59 .1 83h42c.4-27-.5-56 .1-83s-.6-60-.1-85z
+      M101 0c-.6 29 .6 55 .2 84s.3 59-.2 84h42c-.5-26 .7-57 .1-84S143.5 27 143 0z"/>
+    <path opacity=".44" d="M0 11c27 .5 57-.6 85 0s58-.5 83 0v42c-28 .4-58-.6-83 0s-58-.5-85 0z
+      M0 95c26-.5 55 .6 83 .1s57 .5 85-.1v42c-27-.4-55 .5-85 0s-56 .5-83 0z"/>
+  </g>
+  <rect width="168" height="168" fill="url(#weave)"/>
+  <rect width="168" height="168" filter="url(#fibers)" opacity=".13"/>
+</svg>

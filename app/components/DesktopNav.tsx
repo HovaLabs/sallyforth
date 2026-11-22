@@ -52,7 +52,7 @@ export function DesktopNav() {
           onFocus={(event) => highlight(event.currentTarget)}
           onBlur={restore}
         >
-          {item.label}
+          <span>{item.label}</span>
         </NavLink>
       ))}
     </nav>

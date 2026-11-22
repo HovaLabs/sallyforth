@@ -2,6 +2,8 @@ import type {
   PredictiveSearchQuery,
   RegularSearchQuery,
 } from 'storefrontapi.generated';
+import {excerptFromHtml} from '~/components/blog/format';
+import {blogPathForHandle} from '~/lib/blog';
 
 type ResultWithItems<Type extends 'predictive' | 'regular', Items> = {
   type: Type;
@@ -12,12 +14,55 @@ type ResultWithItems<Type extends 'predictive' | 'regular', Items> = {
 
 export type RegularSearchReturn = ResultWithItems<
   'regular',
-  RegularSearchQuery
+  ReturnType<typeof regularSearchPreviews>
 >;
 export type PredictiveSearchReturn = ResultWithItems<
   'predictive',
   NonNullable<PredictiveSearchQuery['predictiveSearch']>
 >;
+
+function visibleContent(html: string) {
+  return html
+    .replace(/<!--[\s\S]*?-->/g, '')
+    .replace(/<(script|style|template)\b[^>]*>[\s\S]*?<\/\1>/gi, '');
+}
+
+function inlineImageSrc(html: string, pageUrl: URL): string | undefined {
+  for (const tag of html.match(/<img\b[^>]*>/gi) ?? []) {
+    const match = /\ssrc\s*=\s*(?:"([^"]+)"|'([^']+)'|([^\s"'<>]+))/i.exec(tag);
+    const src = (match?.[1] ?? match?.[2] ?? match?.[3])?.trim();
+    if (!src) continue;
+
+    try {
+      const url = new URL(src.replace(/&amp;/gi, '&'), pageUrl);
+      if (url.protocol === 'https:' || url.protocol === 'http:') return url.href;
+    } catch {
+      // A malformed URL can precede a usable image in the same entry.
+    }
+  }
+}
+
+/** Keep only the excerpts and images needed to render each search preview. */
+export function regularSearchPreviews(
+  {articles, pages, products}: RegularSearchQuery,
+  requestUrl: string,
+) {
+  const articleNodes = articles.nodes.map(({contentHtml, ...article}) => {
+    const html = visibleContent(contentHtml);
+    const path = `${blogPathForHandle(article.blog.handle)}/${encodeURIComponent(article.handle)}`;
+    return {
+      ...article,
+      excerpt: article.excerpt?.trim() || excerptFromHtml(html, 170),
+      inlineImage: article.image ? undefined : inlineImageSrc(html, new URL(path, requestUrl)),
+    };
+  });
+  const pageNodes = pages.nodes.map(({body, ...page}) => ({
+    ...page,
+    inlineImage: inlineImageSrc(visibleContent(body), new URL(`/pages/${page.handle}`, requestUrl)),
+  }));
+
+  return {products, articles: {nodes: articleNodes}, pages: {nodes: pageNodes}};
+}
 
 /**
  * Returns the empty state of a predictive search result to reset the search state.
@@ -68,7 +113,7 @@ export function urlWithTrackingParams({
 }: UrlWithTrackingParams) {
   let search = new URLSearchParams({
     ...extraParams,
-    q: encodeURIComponent(term),
+    q: term,
   }).toString();
 
   if (trackingParams) {

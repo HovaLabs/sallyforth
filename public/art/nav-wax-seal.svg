@@ -1,10 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
   <defs>
-    <linearGradient id="wax-rim" x2=".65" y2="1" gradientUnits="objectBoundingBox">
-      <stop stop-color="#607e58"/>
-      <stop offset=".48" stop-color="#365f41"/>
-      <stop offset="1" stop-color="#183e2b"/>
-    </linearGradient>
     <svg id="monogram" viewBox="64.5 21 775 775" width="50" height="50">
       <g transform="translate(0 846) scale(.1 -.1)" fill="currentColor"
          stroke="currentColor" stroke-width="85" stroke-linejoin="round">
@@ -39,8 +34,35 @@ c-208 -97 -328 -147 -398 -166 -52 -14 -137 -19 -148 -8 -10 10 9 40 118 184
       </g>
     </svg>
   </defs>
-  <path fill="url(#wax-rim)" d="M31 2C40 1 48 4 54 10C60 16 60 24 62 32C64 40 60 48 54 54C49 60 40 63 32 62C24 62 21 60 15 58C6 56 1 51 2 43C3 36 1 31 3 23C6 11 17 3 31 2Z"/>
-  <path fill="#204a35" d="M31 6C46 5 57 17 58 32C59 46 47 58 32 58C18 59 6 48 6 34C5 19 16 7 31 6Z"/>
+  <!-- Pooled wax, outlined with a pen. -->
+  <path fill="#607f56" stroke="#173c2a" stroke-width="1.35" stroke-linejoin="round"
+    d="M29.5 2.9 Q34.7 1.6 39 3.3 C42.2 4.4 44.1 4.1 47.3 6.4
+       Q51.3 9.8 54.1 12 C58.5 16.1 58 20.3 60.1 24.4
+       C62.1 28.1 60.9 30.4 61.6 34.1 Q62.7 39.4 59.7 44.3
+       C57.4 48.2 57.6 50.6 53.1 53.7 C49.1 56.1 47.7 59.1 42.3 59.8
+       Q37.6 60.1 34.5 61.3 C29.3 63 24.3 60.2 20.7 59.2
+       C16.1 57.7 13.8 58.3 10.7 55.5 Q7.8 53 5.2 51.1
+       C1.4 47.9 3.7 43.9 3.1 39.7 C2 35.6 3.7 32.7 3.4 28.7
+       Q3.2 22.9 7.5 17.2 C10.8 13.5 11.1 10.2 16.2 7.8
+       C20.3 6.1 22 3.7 26.1 3.8 Z"/>
+  <path fill="#204a35" stroke="#294d33" stroke-width=".9"
+    d="M31.4 7.2 C38 6.2 46.3 9.5 51.4 15.3 Q56.4 21.9 56.8 29.9
+       C58.6 39.5 52.9 49.2 45.6 53.4 Q39.7 57.7 31.6 56.7
+       C24 57.3 16.8 53.5 11.9 48.4 Q6.4 41.7 7.4 33.6
+       C6.8 24.6 11.7 16.8 18.5 11.9 Q24.3 7.6 31.4 7.2 Z"/>
+  <!-- Short, broken strokes follow the turns of the rim. -->
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path stroke="#b7c69b" stroke-width=".95"
+      d="M5.5 29 Q5.4 23.8 8.8 19.4 M11.1 15.8 Q14.4 11.1 18 10
+         M21.2 7.9 Q24 6.2 27.7 5.8 M30.2 5.2 l2.2 -.2"/>
+    <path stroke="#193e2b" stroke-width=".85"
+      d="M4.2 44.2 l2 -1.7 M4.9 47 l2.1 -2.2 M6.3 49 l2.3 -2.1
+         M8.4 50.8 l1.7 -1.8 M40.8 58.1 q5 -.8 7.7 -3.1
+         M50.3 54.5 q6 -4.2 7.1 -9.2 M58.1 42.1 l.6 -2.4"/>
+    <path stroke="#71906b" stroke-width=".65"
+      d="M10.1 29.4 q.8 -6.5 5.3 -11.7 M17.4 15.9 l2 -1.5
+         M46.7 50.9 q3.9 -2.2 6.2 -6.8"/>
+  </g>
   <use href="#monogram" x="7" y="7.8" color="#113221"/>
   <use href="#monogram" x="7" y="7" color="#fff5d9"/>
 </svg>

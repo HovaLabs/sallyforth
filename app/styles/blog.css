@@ -171,15 +171,8 @@
   width: var(--vine-width);
   overflow: hidden;
   pointer-events: none;
-  clip-path: inset(0 0 max(0px, calc(100% - var(--tip, 100%))) 0);
 }
-.sf-pea svg { display: block; width: 100%; }
-.sf-pea__shoot { transform: scale(var(--growth, 1)); }
-@media (prefers-reduced-motion: reduce) {
-  .sf-pea { clip-path: none; }
-  .sf-pea__shoot { transform: none; }
-}
-
+.sf-pea svg { display: block; width: 100%; height: auto; }
 .sf-hero-pea {
   display: block;
   width: min(82%, 340px);
@@ -187,17 +180,26 @@
   margin: 12px auto 0;
 }
 @media (prefers-reduced-motion: no-preference) {
-  .sf-hero-pea__stem {
-    stroke-dasharray: 1;
-    animation: sf-hero-pea-grow 2.3s linear both;
+  .sf-pea {
+    clip-path: inset(0 0 max(0px, calc(100% - var(--tip, 100%))) 0);
   }
-  .sf-hero-pea__leaves { animation: sf-hero-pea-unfurl .55s ease-out both; }
+  .sf-pea .sf-pea__sprig {
+    transform: scale(clamp(0, calc((var(--tip-units) - var(--segment-top) - var(--node-y)) / 36), 1));
+  }
+  .sf-hero-pea .sf-pea__stem path {
+    stroke-dasharray: 1;
+    animation: sf-hero-pea-grow 2.1s linear both;
+  }
+  .sf-hero-pea .sf-pea__sprig {
+    animation: sf-hero-pea-unfurl .6s cubic-bezier(.2,.72,.24,1) both;
+    animation-delay: calc(var(--node-x) * 6ms);
+  }
 }
 @keyframes sf-hero-pea-grow {
   from { stroke-dashoffset: 1; }
   to { stroke-dashoffset: 0; }
 }
 @keyframes sf-hero-pea-unfurl {
-  from { transform: scale(0) rotate(-15deg); }
-  to { transform: scale(1); }
+  from { transform: rotate(-14deg) scale(.12, 0); }
+  to { transform: rotate(0deg) scale(1); }
 }

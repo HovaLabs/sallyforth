@@ -3,6 +3,19 @@ import type {Route} from './+types/collections._index';
 import {getPaginationVariables, Image} from '@shopify/hydrogen';
 import type {CollectionFragment} from 'storefrontapi.generated';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
+import {pageMeta} from '~/lib/seo';
+import {listingEntity} from '~/lib/listing-seo';
+
+export const meta: Route.MetaFunction = (args) => pageMeta(args, {
+  title: 'Shop collections',
+  description: 'Explore the collections in the SallyForth shop and browse the pieces in each one.',
+  card: 'shop',
+  pageType: 'CollectionPage',
+  paginated: true,
+  entity: listingEntity((args.data?.collections.nodes ?? []).map((collection) => ({
+    name: collection.title, path: `/collections/${collection.handle}`,
+  }))),
+});
 
 export async function loader(args: Route.LoaderArgs) {
   // Start fetching non-critical data without blocking time to first byte

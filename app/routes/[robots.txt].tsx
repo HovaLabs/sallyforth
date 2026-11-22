@@ -1,8 +1,8 @@
 import type {Route} from './+types/[robots.txt]';
+import {siteOrigin} from '~/lib/site-origin';
 
-export function loader({request}: Route.LoaderArgs) {
-  const url = new URL(request.url);
-  const body = robotsTxtData({url: url.origin});
+export function loader({request, context}: Route.LoaderArgs) {
+  const body = robotsTxtData(siteOrigin(request, context.env));
 
   return new Response(body, {
     status: 200,
@@ -14,12 +14,10 @@ export function loader({request}: Route.LoaderArgs) {
   });
 }
 
-function robotsTxtData({url}: {url?: string}) {
-  const sitemapUrl = url ? `${url}/sitemap.xml` : undefined;
-
+function robotsTxtData(origin: string) {
   return `
 User-agent: *
-${generalDisallowRules({sitemapUrl})}
+${generalDisallowRules()}
 
 # Google adsbot ignores robots.txt unless specifically named!
 User-agent: adsbot-google
@@ -34,17 +32,19 @@ Disallow: /
 
 User-agent: AhrefsBot
 Crawl-delay: 10
-${generalDisallowRules({sitemapUrl})}
+${generalDisallowRules()}
 
 User-agent: AhrefsSiteAudit
 Crawl-delay: 10
-${generalDisallowRules({sitemapUrl})}
+${generalDisallowRules()}
 
 User-agent: MJ12bot
 Crawl-Delay: 10
 
 User-agent: Pinterest
 Crawl-delay: 1
+
+Sitemap: ${origin}/sitemap.xml
 `.trim();
 }
 
@@ -52,9 +52,10 @@ Crawl-delay: 1
  * This function generates disallow rules that generally follow what Shopify's
  * Online Store has as defaults for their robots.txt
  */
-function generalDisallowRules({sitemapUrl}: {sitemapUrl?: string}) {
+function generalDisallowRules() {
   return `Disallow: /cart
 Disallow: /account
+Disallow: /discount/
 Disallow: /collections/*sort_by*
 Disallow: /*/collections/*sort_by*
 Disallow: /collections/*+*
@@ -70,9 +71,7 @@ Disallow: /blogs/*%2b*
 Disallow: /*/blogs/*+*
 Disallow: /*/blogs/*%2B*
 Disallow: /*/blogs/*%2b*
-Disallow: /policies/
 Disallow: /search
 Allow: /search/
-Disallow: /search/?*
-${sitemapUrl ? `Sitemap: ${sitemapUrl}` : ''}`;
+Disallow: /search/?*`;
 }
