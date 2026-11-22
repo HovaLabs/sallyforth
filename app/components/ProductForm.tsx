@@ -5,6 +5,7 @@ import type {
   ProductOptionValueSwatch,
 } from '@shopify/hydrogen/storefront-api-types';
 import {AddToCartButton} from './AddToCartButton';
+import {ProductPrice} from './ProductPrice';
 import type {ProductFragment} from 'storefrontapi.generated';
 
 export function ProductForm({
@@ -22,8 +23,8 @@ export function ProductForm({
         if (option.optionValues.length === 1) return null;
 
         return (
-          <div className="product-options" key={option.name}>
-            <h5>{option.name}</h5>
+          <fieldset className="product-options" key={option.name}>
+            <legend>{option.name}</legend>
             <div className="product-options-grid">
               {option.optionValues.map((value) => {
                 const {
@@ -57,6 +58,7 @@ export function ProductForm({
                       prefetch="intent"
                       preventScrollReset
                       replace
+                      aria-current={selected ? 'true' : undefined}
                       to={`/products/${handle}?${variantUriQuery}`}
                     >
                       <ProductOptionSwatch swatch={swatch} name={name} />
@@ -73,6 +75,7 @@ export function ProductForm({
                       type="button"
                       className={itemClassName}
                       key={option.name + name}
+                      aria-pressed={selected}
                       disabled={!exists}
                       onClick={() => {
                         if (!selected) {
@@ -89,27 +92,19 @@ export function ProductForm({
                 }
               })}
             </div>
-            <br />
-          </div>
+          </fieldset>
         );
       })}
-      <AddToCartButton
-        className="sf-pill sf-pill--green product-cta"
-        disabled={!selectedVariant || !selectedVariant.availableForSale}
-        lines={
-          selectedVariant
-            ? [
-                {
-                  merchandiseId: selectedVariant.id,
-                  quantity: 1,
-                  selectedVariant,
-                },
-              ]
-            : []
-        }
-      >
-        {selectedVariant?.availableForSale ? 'Add to cart' : 'Sold out'}
-      </AddToCartButton>
+      <div className="product-purchase">
+        <ProductPrice price={selectedVariant?.price} compareAtPrice={selectedVariant?.compareAtPrice} />
+        <AddToCartButton
+          className="sf-pill sf-pill--red product-cta"
+          disabled={!selectedVariant?.availableForSale}
+          lines={selectedVariant ? [{merchandiseId: selectedVariant.id, quantity: 1, selectedVariant}] : []}
+        >
+          {selectedVariant?.availableForSale ? 'Add to cart' : 'Sold out'}
+        </AddToCartButton>
+      </div>
     </div>
   );
 }
@@ -127,14 +122,11 @@ function ProductOptionSwatch({
   if (!image && !color) return name;
 
   return (
-    <div
-      aria-label={name}
-      className="product-option-label-swatch"
-      style={{
-        backgroundColor: color || 'transparent',
-      }}
-    >
-      {!!image && <img src={image} alt={name} />}
-    </div>
+    <>
+      <span className="product-option-label-swatch" aria-hidden="true" style={{backgroundColor: color || 'transparent'}}>
+        {image && <img src={image} alt="" />}
+      </span>
+      {name}
+    </>
   );
 }

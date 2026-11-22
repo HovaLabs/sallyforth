@@ -2,10 +2,11 @@ import {useLoaderData} from 'react-router';
 import type {Route} from './+types/blogs.$blogHandle.$articleHandle';
 import {Image} from '@shopify/hydrogen';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
+import {articleSeo, redirectBrandedBlog} from '~/lib/blog';
+import {pageMeta} from '~/lib/seo';
 
-export const meta: Route.MetaFunction = ({data}) => {
-  return [{title: `Hydrogen | ${data?.article.title ?? ''} article`}];
-};
+export const meta: Route.MetaFunction = (args) =>
+  pageMeta(args, articleSeo(args.data?.article, args.params.blogHandle));
 
 export async function loader(args: Route.LoaderArgs) {
   // Start fetching non-critical data without blocking time to first byte
@@ -27,6 +28,7 @@ async function loadCriticalData({context, request, params}: Route.LoaderArgs) {
   if (!articleHandle || !blogHandle) {
     throw new Response('Not found', {status: 404});
   }
+  redirectBrandedBlog(request, blogHandle, articleHandle);
 
   const [{blog}] = await Promise.all([
     context.storefront.query(ARTICLE_QUERY, {
@@ -76,21 +78,19 @@ export default function Article() {
   }).format(new Date(article.publishedAt));
 
   return (
-    <div className="article">
-      <h1>
-        {title}
-        <div>
-          <time dateTime={article.publishedAt}>{publishedDate}</time> &middot;{' '}
-          <address>{author?.name}</address>
-        </div>
-      </h1>
+    <article className="article">
+      <h1>{title}</h1>
+      <p>
+        <time dateTime={article.publishedAt}>{publishedDate}</time>
+        {author?.name && ` · ${author.name}`}
+      </p>
 
-      {image && <Image data={image} sizes="90vw" loading="eager" />}
+      {image && <Image data={image} alt={image.altText || title} sizes="90vw" loading="eager" />}
       <div
         dangerouslySetInnerHTML={{__html: contentHtml}}
         className="article"
       />
-    </div>
+    </article>
   );
 }
 
@@ -107,6 +107,8 @@ const ARTICLE_QUERY = `#graphql
       articleByHandle(handle: $articleHandle) {
         handle
         title
+        excerpt
+        blog { title }
         contentHtml
         publishedAt
         author: authorV2 {

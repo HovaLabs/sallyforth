@@ -4,10 +4,11 @@ import {Image, getPaginationVariables} from '@shopify/hydrogen';
 import type {ArticleItemFragment} from 'storefrontapi.generated';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
+import {blogPathForHandle, blogSeo, redirectBrandedBlog} from '~/lib/blog';
+import {pageMeta} from '~/lib/seo';
 
-export const meta: Route.MetaFunction = ({data}) => {
-  return [{title: `Hydrogen | ${data?.blog.title ?? ''} blog`}];
-};
+export const meta: Route.MetaFunction = (args) =>
+  pageMeta(args, blogSeo(args.data?.blog, args.params.blogHandle));
 
 export async function loader(args: Route.LoaderArgs) {
   // Start fetching non-critical data without blocking time to first byte
@@ -31,6 +32,7 @@ async function loadCriticalData({context, request, params}: Route.LoaderArgs) {
   if (!params.blogHandle) {
     throw new Response(`blog not found`, {status: 404});
   }
+  redirectBrandedBlog(request, params.blogHandle);
 
   const [{blog}] = await Promise.all([
     context.storefront.query(BLOGS_QUERY, {
@@ -96,7 +98,7 @@ function ArticleItem({
   }).format(new Date(article.publishedAt!));
   return (
     <div className="blog-article" key={article.id}>
-      <Link to={`/blogs/${article.blog.handle}/${article.handle}`}>
+      <Link to={`${blogPathForHandle(article.blog.handle)}/${article.handle}`}>
         {article.image && (
           <div className="blog-article-image">
             <Image

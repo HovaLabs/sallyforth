@@ -1,4 +1,4 @@
-import {redirect, useLoaderData} from 'react-router';
+import {Link, useLoaderData} from 'react-router';
 import type {Route} from './+types/products.$handle';
 import {
   getSelectedProductOptions,
@@ -8,19 +8,57 @@ import {
   getAdjacentAndFirstAvailableVariants,
   useSelectedOptionInUrlParam,
 } from '@shopify/hydrogen';
-import {ProductPrice} from '~/components/ProductPrice';
 import {ProductImage} from '~/components/ProductImage';
 import {ProductForm} from '~/components/ProductForm';
+import {excerptFromHtml} from '~/components/blog/format';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
+import {getVariantUrl} from '~/lib/variants';
+import {pageMeta} from '~/lib/seo';
 
-export const meta: Route.MetaFunction = ({data}) => {
-  return [
-    {title: `Hydrogen | ${data?.product.title ?? ''}`},
-    {
-      rel: 'canonical',
-      href: `/products/${data?.product.handle}`,
-    },
-  ];
+export const meta: Route.MetaFunction = (args) => {
+  const product = args.data?.product;
+  const variant = product?.selectedOrFirstAvailableVariant;
+  const image = variant?.image ?? product?.featuredImage;
+  const meta = pageMeta(args, {
+    title: product?.seo?.title || product?.title || 'Product',
+    description: product?.seo?.description || excerptFromHtml(product?.descriptionHtml) ||
+      product?.description || `Find ${product?.title || 'this item'} in the SallyForth shop.`,
+    card: 'shop',
+    type: 'product',
+    image: image ?? undefined,
+    breadcrumbs: [{name: 'Shop', path: '/collections/all'}],
+    entity: product && ((url, origin) => ({
+      '@type': 'Product',
+      '@id': `${url}#product`,
+      name: product.title,
+      url,
+      description: product.description || product.seo?.description || undefined,
+      image: image?.url,
+      mainEntityOfPage: {'@id': `${url}#webpage`},
+      offers: variant ? {
+        '@type': 'Offer',
+        sku: variant.sku || undefined,
+        url: new URL(getVariantUrl({
+          handle: product.handle,
+          pathname: args.location.pathname,
+          searchParams: new URLSearchParams(),
+          selectedOptions: product.options.some((option) => option.optionValues.length > 1)
+            ? variant.selectedOptions : undefined,
+        }), origin).href,
+        price: variant.price.amount,
+        priceCurrency: variant.price.currencyCode,
+        availability: variant.availableForSale ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+        seller: {'@id': `${origin}/#organization`},
+      } : undefined,
+    })),
+  });
+  if (variant && !args.error) {
+    meta.push(
+      {property: 'product:price:amount', content: variant.price.amount},
+      {property: 'product:price:currency', content: variant.price.currencyCode},
+    );
+  }
+  return meta;
 };
 
 export async function loader(args: Route.LoaderArgs) {
@@ -98,34 +136,27 @@ export default function Product() {
   const {title, vendor, descriptionHtml} = product;
 
   return (
-    <div className="product">
-      <div className="product-media">
-        <ProductImage image={selectedVariant?.image} />
-      </div>
-      <div className="product-main">
-        <header className="product-header">
-          {vendor ? <p className="sf-eyebrow product-vendor">{vendor}</p> : null}
-          <h1 className="product-title">{title}</h1>
-          <ProductPrice
-            price={selectedVariant?.price}
-            compareAtPrice={selectedVariant?.compareAtPrice}
-          />
-        </header>
-        <hr className="product-rule" />
-        <ProductForm
-          productOptions={productOptions}
-          selectedVariant={selectedVariant}
-        />
-        {descriptionHtml ? (
-          <section className="product-description">
-            <p className="sf-eyebrow">Details</p>
-            <hr className="product-rule" />
-            <div
-              className="product-prose"
-              dangerouslySetInnerHTML={{__html: descriptionHtml}}
-            />
-          </section>
-        ) : null}
+    <article className="product-page" aria-labelledby="product-title">
+      <div className="product sf-wrap">
+        <Link className="product-back" to="/collections/all">
+          <span aria-hidden="true">←</span> Back to shop
+        </Link>
+        <div className="product-spread">
+          <ProductImage image={selectedVariant?.image ?? product.featuredImage} title={title} />
+          <div className="product-main">
+            <header className="product-header">
+              {vendor && <p className="sf-eyebrow">{vendor}</p>}
+              <h1 className="product-title" id="product-title">{title}</h1>
+            </header>
+            <ProductForm productOptions={productOptions} selectedVariant={selectedVariant} />
+            {descriptionHtml && (
+              <section className="product-description" aria-labelledby="product-details">
+                <h2 id="product-details">Details</h2>
+                <div className="product-prose" dangerouslySetInnerHTML={{__html: descriptionHtml}} />
+              </section>
+            )}
+          </div>
+        </div>
       </div>
       <Analytics.ProductView
         data={{
@@ -142,7 +173,7 @@ export default function Product() {
           ],
         }}
       />
-    </div>
+    </article>
   );
 }
 
@@ -191,6 +222,14 @@ const PRODUCT_FRAGMENT = `#graphql
     handle
     descriptionHtml
     description
+    featuredImage {
+      __typename
+      id
+      url
+      altText
+      width
+      height
+    }
     encodedVariantExistence
     encodedVariantAvailability
     options {

@@ -1,161 +1,136 @@
+import type {ReactNode} from 'react';
 import {Link} from 'react-router';
-import {Image, Money, Pagination} from '@shopify/hydrogen';
+import {Image, Money} from '@shopify/hydrogen';
+import type {MoneyV2} from '@shopify/hydrogen/storefront-api-types';
+import type {
+  SearchArticleFragment,
+  SearchProductFragment,
+} from 'storefrontapi.generated';
+import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
+import {formatDate} from '~/components/blog/format';
+import {ART} from '~/config/shop';
+import {blogPathForHandle} from '~/lib/blog';
 import {urlWithTrackingParams, type RegularSearchReturn} from '~/lib/search';
 
-type SearchItems = RegularSearchReturn['result']['items'];
-type PartialSearchResult<ItemType extends keyof SearchItems> = Pick<
-  SearchItems,
-  ItemType
-> &
-  Pick<RegularSearchReturn, 'term'>;
+const illustrations = {article: ART.blogTile, product: ART.logoSmall, page: ART.snail};
 
-type SearchResultsProps = RegularSearchReturn & {
-  children: (args: SearchItems & {term: string}) => React.ReactNode;
-};
-
-export function SearchResults({
-  term,
-  result,
-  children,
-}: Omit<SearchResultsProps, 'error' | 'type'>) {
-  if (!result?.total) {
-    return null;
-  }
-
-  return children({...result.items, term});
+interface ResultProps {
+  kind: keyof typeof illustrations;
+  to: string;
+  title: string;
+  image?: SearchArticleFragment['image'];
+  inlineImage?: string;
+  summary?: string | null;
+  byline?: ReactNode;
+  price?: MoneyV2;
+  loading: 'eager' | 'lazy';
 }
 
-SearchResults.Articles = SearchResultsArticles;
-SearchResults.Pages = SearchResultsPages;
-SearchResults.Products = SearchResultsProducts;
-SearchResults.Empty = SearchResultsEmpty;
-
-function SearchResultsArticles({
-  term,
-  articles,
-}: PartialSearchResult<'articles'>) {
-  if (!articles?.nodes.length) {
-    return null;
-  }
-
+function ResultPreview({
+  kind, to, title, image, inlineImage, summary, byline, price, loading,
+}: ResultProps) {
+  const padImage = kind === 'product' || (!image && !inlineImage);
   return (
-    <div className="search-result">
-      <h2>Articles</h2>
-      <div>
-        {articles?.nodes?.map((article) => {
-          const articleUrl = urlWithTrackingParams({
-            baseUrl: `/blogs/${article.handle}`,
-            trackingParams: article.trackingParameters,
-            term,
-          });
-
-          return (
-            <div className="search-results-item" key={article.id}>
-              <Link prefetch="intent" to={articleUrl}>
-                {article.title}
-              </Link>
-            </div>
-          );
-        })}
-      </div>
-      <br />
-    </div>
+    <article className="sf-search-result">
+      <Link className="sf-search-result__link" to={to} prefetch="intent" aria-label={title}>
+        <div className={`sf-search-result__image${padImage ? ' sf-search-result__image--padded' : ''}`}>
+          {image ? (
+            <Image
+              data={image}
+              alt={image.altText || ''}
+              sizes="(max-width: 600px) 100vw, (max-width: 1000px) 25vw, 250px"
+              loading={loading}
+            />
+          ) : (
+            <img src={inlineImage ?? illustrations[kind]} alt="" loading={loading} />
+          )}
+        </div>
+        <div className="sf-search-result__text">
+          {byline && <div className="sf-eyebrow sf-search-result__byline">{byline}</div>}
+          <h3>{title}</h3>
+          {summary && <p>{summary}</p>}
+          {price && <div className="sf-search-result__price"><Money data={price} /></div>}
+        </div>
+      </Link>
+    </article>
   );
 }
 
-function SearchResultsPages({term, pages}: PartialSearchResult<'pages'>) {
-  if (!pages?.nodes.length) {
-    return null;
-  }
+export function SearchResults({items, term}: {
+  items: RegularSearchReturn['result']['items'];
+  term: string;
+}) {
+  const {products, articles, pages} = items;
+  const resultUrl = (baseUrl: string, trackingParams?: string | null) =>
+    urlWithTrackingParams({baseUrl, trackingParams, term});
 
   return (
-    <div className="search-result">
-      <h2>Pages</h2>
-      <div>
-        {pages?.nodes?.map((page) => {
-          const pageUrl = urlWithTrackingParams({
-            baseUrl: `/pages/${page.handle}`,
-            trackingParams: page.trackingParameters,
-            term,
-          });
-
-          return (
-            <div className="search-results-item" key={page.id}>
-              <Link prefetch="intent" to={pageUrl}>
-                {page.title}
-              </Link>
-            </div>
-          );
-        })}
-      </div>
-      <br />
+    <div className="sf-search__groups">
+      {products.nodes.length > 0 && (
+        <section className="sf-search__group" aria-labelledby="search-products">
+          <h2 id="search-products">Products</h2>
+          <PaginatedResourceSection<SearchProductFragment>
+            connection={products}
+            resourcesClassName="sf-search__list"
+          >
+            {({node: product, index}) => {
+              const variant = product.selectedOrFirstAvailableVariant;
+              return (
+                <ResultPreview
+                  key={product.id}
+                  kind="product"
+                  to={resultUrl(`/products/${product.handle}`, product.trackingParameters)}
+                  title={product.title}
+                  image={variant?.image ?? product.featuredImage}
+                  summary={product.description}
+                  price={variant?.price}
+                  loading={index === 0 ? 'eager' : 'lazy'}
+                />
+              );
+            }}
+          </PaginatedResourceSection>
+        </section>
+      )}
+      {articles.nodes.length > 0 && (
+        <section className="sf-search__group" aria-labelledby="search-articles">
+          <h2 id="search-articles">Articles</h2>
+          <div className="sf-search__list">
+            {articles.nodes.map((article, index) => (
+              <ResultPreview
+                key={article.id}
+                kind="article"
+                to={resultUrl(`${blogPathForHandle(article.blog.handle)}/${encodeURIComponent(article.handle)}`, article.trackingParameters)}
+                title={article.title}
+                image={article.image}
+                inlineImage={article.inlineImage}
+                summary={article.excerpt}
+                byline={
+                  <>{article.blog.title} · <time dateTime={article.publishedAt}>{formatDate(article.publishedAt)}</time></>
+                }
+                loading={index === 0 ? 'eager' : 'lazy'}
+              />
+            ))}
+          </div>
+        </section>
+      )}
+      {pages.nodes.length > 0 && (
+        <section className="sf-search__group" aria-labelledby="search-pages">
+          <h2 id="search-pages">Pages</h2>
+          <div className="sf-search__list">
+            {pages.nodes.map((page, index) => (
+              <ResultPreview
+                key={page.id}
+                kind="page"
+                to={resultUrl(`/pages/${page.handle}`, page.trackingParameters)}
+                title={page.title}
+                inlineImage={page.inlineImage}
+                summary={page.bodySummary}
+                loading={index === 0 ? 'eager' : 'lazy'}
+              />
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
-}
-
-function SearchResultsProducts({
-  term,
-  products,
-}: PartialSearchResult<'products'>) {
-  if (!products?.nodes.length) {
-    return null;
-  }
-
-  return (
-    <div className="search-result">
-      <h2>Products</h2>
-      <Pagination connection={products}>
-        {({nodes, isLoading, NextLink, PreviousLink}) => {
-          const ItemsMarkup = nodes.map((product) => {
-            const productUrl = urlWithTrackingParams({
-              baseUrl: `/products/${product.handle}`,
-              trackingParams: product.trackingParameters,
-              term,
-            });
-
-            const price = product?.selectedOrFirstAvailableVariant?.price;
-            const image = product?.selectedOrFirstAvailableVariant?.image;
-
-            return (
-              <div className="search-results-item" key={product.id}>
-                <Link prefetch="intent" to={productUrl}>
-                  {image && (
-                    <Image data={image} alt={product.title} width={50} />
-                  )}
-                  <div>
-                    <p>{product.title}</p>
-                    <small>{price && <Money data={price} />}</small>
-                  </div>
-                </Link>
-              </div>
-            );
-          });
-
-          return (
-            <div>
-              <div>
-                <PreviousLink>
-                  {isLoading ? 'Loading...' : <span>↑ Load previous</span>}
-                </PreviousLink>
-              </div>
-              <div>
-                {ItemsMarkup}
-                <br />
-              </div>
-              <div>
-                <NextLink>
-                  {isLoading ? 'Loading...' : <span>Load more ↓</span>}
-                </NextLink>
-              </div>
-            </div>
-          );
-        }}
-      </Pagination>
-      <br />
-    </div>
-  );
-}
-
-function SearchResultsEmpty() {
-  return <p>No results, try a different search.</p>;
 }

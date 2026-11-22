@@ -2,13 +2,13 @@ import {useLoaderData} from 'react-router';
 import type {Route} from './+types/blog.$articleHandle';
 import blogStyles from '~/styles/blog.css?url';
 import {SHOP} from '~/config/shop';
-import {loadArticle} from '~/lib/blog';
+import {loadArticle, articleSeo} from '~/lib/blog';
+import {pageMeta} from '~/lib/seo';
 import {ArticlePage} from '~/components/blog/ArticlePage';
 import {loadMoreArticles} from '~/components/blog/moreArticles';
 
-export const meta: Route.MetaFunction = ({data}) => {
-  return [{title: `${SHOP.name} | ${data?.article.title ?? 'Article'}`}];
-};
+export const meta: Route.MetaFunction = (args) =>
+  pageMeta(args, articleSeo(args.data?.article, SHOP.handles.blog));
 
 export const links: Route.LinksFunction = () => [{rel: 'stylesheet', href: blogStyles}];
 

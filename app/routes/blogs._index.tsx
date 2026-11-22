@@ -3,12 +3,22 @@ import type {Route} from './+types/blogs._index';
 import {getPaginationVariables} from '@shopify/hydrogen';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
 import type {BlogsQuery} from 'storefrontapi.generated';
+import {blogPathForHandle} from '~/lib/blog';
+import {listingEntity} from '~/lib/listing-seo';
+import {pageMeta} from '~/lib/seo';
 
 type BlogNode = BlogsQuery['blogs']['nodes'][0];
 
-export const meta: Route.MetaFunction = () => {
-  return [{title: `Hydrogen | Blogs`}];
-};
+export const meta: Route.MetaFunction = (args) => pageMeta(args, {
+  title: 'Blogs',
+  description: 'Browse the SallyForth journals for garden notes, seasonal planting ideas, crafts, and stories for families.',
+  card: 'blog',
+  pageType: 'CollectionPage',
+  paginated: true,
+  entity: listingEntity((args.data?.blogs.nodes ?? []).map((blog) => ({
+    name: blog.title, path: blogPathForHandle(blog.handle),
+  }))),
+});
 
 export async function loader(args: Route.LoaderArgs) {
   // Start fetching non-critical data without blocking time to first byte
@@ -63,7 +73,7 @@ export default function Blogs() {
               className="blog"
               key={blog.handle}
               prefetch="intent"
-              to={`/blogs/${blog.handle}`}
+              to={blogPathForHandle(blog.handle)}
             >
               <h2>{blog.title}</h2>
             </Link>

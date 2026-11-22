@@ -6,9 +6,9 @@
   "type": "module",
   "scripts": {
     "build": "shopify hydrogen build --codegen",
-    "dev": "shopify hydrogen dev --codegen --port 3100",
+    "dev": "NODE_OPTIONS=--dns-result-order=ipv4first shopify hydrogen dev --codegen --port 3100",
     "start-local": "npm install && npx shopify hydrogen link && npm run dev",
-    "preview": "shopify hydrogen preview --build --port 3100",
+    "preview": "NODE_OPTIONS=--dns-result-order=ipv4first shopify hydrogen preview --build --port 3100",
     "lint": "eslint --no-error-on-unmatched-pattern .",
     "typecheck": "react-router typegen && tsc --noEmit",
     "codegen": "shopify hydrogen codegen && react-router typegen",

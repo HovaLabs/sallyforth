@@ -7,7 +7,10 @@ test.describe('home', () => {
     await page.goto('/');
     await expect(page.locator('.sf-frame')).toBeVisible();
     await expect(page.locator('#hero')).toBeVisible();
-    await expect(page.locator('.sf-hero__layer')).toHaveCount(12);
+    const landscape = page.locator('.sf-hero__landscape');
+    await expect(landscape).toBeVisible();
+    await expect(landscape).toHaveJSProperty('complete', true);
+    expect(await landscape.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBeGreaterThan(0);
     await expect(page.locator('#store')).toBeVisible();
     await expect(page.locator('.sf-footgrid')).toBeVisible();
     expect(errors).toEqual([]);
@@ -44,17 +47,64 @@ test.describe('home', () => {
     expect(await page.locator('#carousel').evaluate((el) => el.scrollLeft)).toBe(0);
   });
 
-  test('parallax progress is continuous through 520px', async ({page}, testInfo) => {
-    test.skip(testInfo.project.name === 'mobile', 'desktop only');
+  test('both cloud layers drift and respect reduced motion', async ({page}) => {
+    await page.emulateMedia({reducedMotion: 'no-preference'});
     await page.goto('/');
-    const at = async (y: number) => {
-      await page.evaluate((y) => { window.scrollTo(0, y); window.dispatchEvent(new Event('scroll')); }, y);
-      await page.waitForTimeout(50);
-      return page.locator('.sf-hero__layer').first().evaluate((el) => el.style.transform);
-    };
-    const t0 = await at(0), t519 = await at(519), t521 = await at(521);
-    expect(t0).toBe('translate(0px, 0px) rotate(18deg)');
-    expect(t519).not.toBe(t521);
+    const near = page.locator('.sf-hero__clouds--near');
+    const far = page.locator('.sf-hero__clouds--far');
+    for (const layer of [near, far]) {
+      await expect(layer).toBeVisible();
+      const position = () => layer.evaluate((el) => el.getBoundingClientRect().left);
+      const start = await position();
+      await expect.poll(position).not.toBe(start);
+    }
+
+    await page.emulateMedia({reducedMotion: 'reduce'});
+    for (const layer of [near, far]) {
+      await expect(layer).toBeVisible();
+      await expect(layer).toHaveCSS('animation-name', 'none');
+    }
+  });
+
+  test('the sunrise grows with scrolling and returns to its initial size at the top', async ({page}) => {
+    await page.goto('/');
+    const sun = page.locator('.sf-hero__sun-disc');
+    const diameter = () => sun.evaluate((el) => el.getBoundingClientRect().width);
+    await expect(sun).toBeVisible();
+    const initial = await diameter();
+
+    await page.evaluate(() => window.scrollTo(0, 100));
+    await expect.poll(diameter).toBeGreaterThan(initial);
+    const midway = await diameter();
+
+    await page.evaluate(() => window.scrollTo(0, 250));
+    await expect.poll(diameter).toBeGreaterThan(midway);
+
+    const hero = (await page.locator('#hero').boundingBox())!;
+    await page.evaluate((height) => window.scrollTo(0, height), hero.height);
+    await expect.poll(diameter).toBeCloseTo(initial * 2.1, 1);
+
+    await page.evaluate(() => window.scrollTo(0, 100));
+    await expect.poll(diameter).toBeCloseTo(midway, 1);
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await expect.poll(diameter).toBeCloseTo(initial, 1);
+  });
+
+  test('reduced motion holds the sun still while the homepage navigation bar responds to scrolling', async ({page}) => {
+    await page.emulateMedia({reducedMotion: 'reduce'});
+    await page.goto('/');
+    const sun = page.locator('.sf-hero__sun-disc');
+    const nav = page.locator('.sf-nav');
+    const transparent = 'rgba(0, 0, 0, 0)';
+    await expect(sun).toBeVisible();
+    const initial = await sun.evaluate((el) => el.getBoundingClientRect().width);
+    await expect(nav).toHaveCSS('background-color', transparent);
+
+    await page.evaluate(() => window.scrollTo(0, 200));
+    await expect(nav).not.toHaveCSS('background-color', transparent);
+    expect(await sun.evaluate((el) => el.getBoundingClientRect().width)).toBeCloseTo(initial, 1);
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await expect(nav).toHaveCSS('background-color', transparent);
   });
 
   test('mobile: burger opens the menu with the nav links', async ({page}, testInfo) => {

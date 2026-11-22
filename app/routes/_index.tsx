@@ -7,11 +7,12 @@ import {SHOP} from '~/config/shop';
 import {ARTICLE_CARD_FRAGMENT} from '~/lib/fragments-content';
 import {BlogTeaser} from '~/components/home/BlogTeaser';
 import {StoreCarousel} from '~/components/home/StoreCarousel';
+import {pageMeta} from '~/lib/seo';
 
-export const meta: Route.MetaFunction = () => [
-  {title: `${SHOP.name} — ${SHOP.tagline}`},
-  {name: 'description', content: 'Art, gardens, and stories for growing families. Hand-painted goods, a blog, and the Bits and Bobs Almanac.'},
-];
+export const meta: Route.MetaFunction = (args) => pageMeta(args, {
+  title: 'SallyForth — Art, Gardens, and Stories',
+  description: 'Shop hand-painted goods, find a craft for the kitchen table, and discover what to plant next in the Bits and Bobs Almanac at SallyForth.',
+});
 
 export const links: Route.LinksFunction = () => [{rel: 'stylesheet', href: homeStyles}];
 

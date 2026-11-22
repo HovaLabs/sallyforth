@@ -1,6 +1,14 @@
 import {useLoaderData, Link} from 'react-router';
 import type {Route} from './+types/policies._index';
 import type {PoliciesQuery, PolicyItemFragment} from 'storefrontapi.generated';
+import {pageMeta} from '~/lib/seo';
+import {listingEntity} from '~/lib/listing-seo';
+
+export const meta: Route.MetaFunction = (args) => pageMeta(args, {
+  title: 'Store policies', description: 'Read the current policies for shopping with SallyForth.',
+  pageType: 'CollectionPage', card: 'shop',
+  entity: listingEntity((args.data?.policies ?? []).map(({title, handle}) => ({name: title, path: `/policies/${handle}`}))),
+});
 
 export async function loader({context}: Route.LoaderArgs) {
   const data: PoliciesQuery = await context.storefront.query(POLICIES_QUERY);

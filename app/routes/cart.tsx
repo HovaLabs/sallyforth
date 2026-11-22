@@ -4,9 +4,11 @@ import type {CartQueryDataReturn} from '@shopify/hydrogen';
 import {CartForm} from '@shopify/hydrogen';
 import cartStyles from '~/styles/cart.css?url';
 import {CartMain} from '~/components/CartMain';
-import {SHOP} from '~/config/shop';
+import {pageMeta} from '~/lib/seo';
 
-export const meta: Route.MetaFunction = () => [{title: `Your basket — ${SHOP.name}`}];
+export const meta: Route.MetaFunction = (args) => pageMeta(args, {
+  title: 'Your basket', description: 'Review the items in your SallyForth basket.', card: 'shop', noindex: true,
+});
 
 export const links: Route.LinksFunction = () => [{rel: 'stylesheet', href: cartStyles}];
 

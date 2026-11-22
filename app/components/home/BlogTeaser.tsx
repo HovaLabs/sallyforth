@@ -22,7 +22,7 @@ export function BlogTeaser({articles}: {articles: Promise<HomeArticlesQuery | nu
       <img className="sf-art" src={ART.blogArtLeft} alt="" style={{left: -320, bottom: -60, width: 570, transform: 'rotate(-18deg)'}} />
       <WaveDivider variant="blog" fill="white" />
       <div className="sf-section-head">
-        <span className="sf-section-title">{BLOG.title}</span>
+        <h2 className="sf-section-title">{BLOG.title}</h2>
         <Link to={BLOG.path} className="sf-italic-link">All posts</Link>
       </div>
       <Suspense fallback={<TeaserBody articles={[]} loading />}>
@@ -49,7 +49,7 @@ function TeaserBody({articles, loading = false}: {articles: ArticleCardFragment[
         {featured ? (
           <>
             <div className="sf-eyebrow" style={{marginBottom: 12}}>Latest · {formatDate(featured.publishedAt)}</div>
-            <div className="sf-blog__title">{featured.title}</div>
+            <h3 className="sf-blog__title">{featured.title}</h3>
             {featured.excerpt ? <p className="sf-blog__excerpt">{featured.excerpt}</p> : null}
             <Link to={articleUrl(featured)} className="sf-blog__cta">READ THE POST →</Link>
             {rest.length ? (

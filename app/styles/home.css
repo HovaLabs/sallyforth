@@ -1,19 +1,120 @@
-/* ---- Hero ---- */
-.sf-hero { position: relative; height: calc(100vh - 80px); min-height: 560px; overflow: hidden; background: var(--white); }
-.sf-hero__layer { position: absolute; pointer-events: none; will-change: transform; translate: -50% -50%; }
-.sf-hero__layer > img { display: block; width: 100%; height: auto; }
-.sf-hero__text { position: absolute; inset: 0; z-index: 3; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; transform: translateY(100px); }
-.sf-hero__halo { background: radial-gradient(ellipse 52% 50% at 50% 50%, rgba(255,255,255,.9) 42%, rgba(255,255,255,.77) 62%, rgba(255,255,255,.44) 80%, rgba(255,255,255,0) 96%); padding: 110px 140px; }
-.sf-hero__eyebrow { font: 700 12px var(--font-body); letter-spacing: .34em; color: var(--green); margin-bottom: 20px; }
-.sf-hero__wordmark { width: min(820px, 82vw); margin: 0 auto; }
-.sf-hero__wordmark-inner { position: relative; }
-.sf-hero__wordmark-inner > img:first-child { display: block; width: 100%; height: auto; }
-.sf-hero__snail { position: absolute; left: 83%; bottom: calc(47% + 24px); width: 6%; pointer-events: none; }
-.sf-hero__tagline { position: absolute; left: 46%; right: 8%; top: 58%; margin: 0; text-align: center; font: italic clamp(14px, 2.6vw, 22px)/1.4 var(--font-body); color: var(--green); }
-.sf-hero__ctas { display: flex; align-items: center; justify-content: center; gap: 26px; margin-top: 26px; flex-wrap: wrap; }
-.sf-hero__cta { background: var(--red); color: var(--paper); padding: 13px 26px; font: 700 13px var(--font-body); letter-spacing: .16em; border-radius: 999px; }
-.sf-hero__alt { font: italic 15px var(--font-body); color: var(--green); border-bottom: 1px solid var(--green); }
-@media (max-width: 900px) { .halo { padding: 60px 24px; } }
+/* ---- Garden at sunrise ---- */
+.sf-hero {
+  --garden-bottom: clamp(-12vw, calc(17% - 16.8vw), 0px);
+  position: relative;
+  isolation: isolate;
+  height: calc(100svh - 80px);
+  min-height: max(580px, 34vw);
+  max-height: 1040px;
+  overflow: hidden;
+  padding: 0;
+  background: #fff0d7;
+}
+.sf-hero__sky {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 55% 77%, #ffe1a5 0%, transparent 42%),
+    linear-gradient(to bottom, #e4eded, #fbefe0 38%, #ffdfbe 74%, #ffcf94);
+}
+.sf-hero__clouds {
+  --cloud-bank: url('/art/footer-cloud-bank.webp');
+  position: absolute;
+  inset: 6% auto 19% 0;
+  width: max(200%, 1080px);
+  display: flex;
+  pointer-events: none;
+}
+/* Two identical sky panels keep the pencil marks continuous when the loop wraps. */
+.sf-hero__clouds::before, .sf-hero__clouds::after {
+  content: "";
+  flex: 0 0 50%;
+  background-image: var(--clouds);
+  background-position: var(--positions);
+  background-size: var(--sizes);
+  background-repeat: no-repeat;
+}
+.sf-hero__clouds--far {
+  --clouds: var(--cloud-bank), var(--cloud-bank), var(--cloud-bank), var(--cloud-bank), var(--cloud-bank);
+  --positions: 32% 3%, right 19%, left 38%, 64% 62%, 15% 93%;
+  --sizes: 52% auto, 34% auto, 41% auto, 62% auto, 44% auto;
+  opacity: .27;
+}
+.sf-hero__clouds--near {
+  --clouds: var(--cloud-bank), var(--cloud-bank), var(--cloud-bank), var(--cloud-bank);
+  --positions: left 12%, 76% 39%, 12% 71%, right 96%;
+  --sizes: 42% auto, 70% auto, 58% auto, 50% auto;
+  opacity: .38;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .sf-hero__clouds--far { animation: sf-hero-cloud-drift 210s linear infinite; }
+  .sf-hero__clouds--near { animation: sf-hero-cloud-drift 125s linear -28s infinite; }
+}
+@keyframes sf-hero-cloud-drift {
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
+}
+.sf-hero__garden {
+  position: absolute;
+  left: 50%;
+  bottom: var(--garden-bottom);
+  width: max(100%, 740px);
+  aspect-ratio: 1983 / 793;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+.sf-hero__landscape { position: relative; display: block; width: 100%; height: 100%; }
+.sf-hero__sun {
+  position: absolute;
+  left: 55%;
+  top: 59%;
+  width: clamp(106px, 13vw, 216px);
+  aspect-ratio: 1;
+  transform: translate(-50%, -58%);
+}
+.sf-hero__sun-disc { display: block; width: 100%; height: 100%; transform: scale(var(--sun-scale, 1)); }
+.sf-hero__text {
+  --wordmark-width: min(76vw, max(760px, 53vw), 135svh);
+  position: absolute;
+  /* Center the signature while reserving space for the top navigation. */
+  top: max(102px, calc(50% - var(--wordmark-width) * .228 - 16px));
+  left: 50%;
+  transform: translateX(-50%);
+  width: var(--wordmark-width);
+  z-index: 3;
+  text-align: center;
+}
+.sf-hero__eyebrow { margin-bottom: 12px; font: 700 clamp(10px, 1vw, 14px) var(--font-body); letter-spacing: .34em; color: var(--green); }
+.sf-hero__wordmark { position: relative; }
+.sf-hero__wordmark h1 { margin: 0; }
+.sf-hero__wordmark h1 img { display: block; width: 100%; height: auto; }
+/* Rests on top of the h’s tail stroke (ink top ≈ 45–47% down the wordmark under the snail), sitting flat on the trough of the curve. */
+.sf-hero__snail { position: absolute; left: 83%; bottom: 53.6%; width: 6%; }
+/* The open area beneath “Forth” leaves the descending pen stroke clear. */
+.sf-hero__tagline {
+  position: absolute;
+  inset: 57% 13% auto 43%;
+  margin: 0;
+  color: #183e28;
+  font: italic 550 clamp(16px, 1.75vw, 28px)/1.3 var(--font-body);
+  text-wrap: balance;
+}
+@media (min-width: 701px) {
+  .sf-hero {
+    --garden-bottom: 0px;
+    height: 100svh;
+    min-height: max(640px, 49vw);
+  }
+  .sf-hero__text {
+    top: max(102px, calc(min(50svh, 520px) - var(--wordmark-width) * .228 - 56px));
+  }
+}
+@media (max-width: 700px) {
+  .sf-hero { height: 86svh; min-height: 550px; }
+  .sf-hero__garden { left: 0; transform: none; width: max(100%, min(170vw, 640px)); }
+  .sf-hero__sun { left: clamp(32%, 65vw, 55%); }
+  .sf-hero__text { --wordmark-width: min(94vw, 540px); }
+  .sf-hero__tagline { inset: 59% 4% auto 43%; }
+}
 
 /* ---- Marquee ---- */
 @keyframes sfMarquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
@@ -33,7 +134,7 @@
 .sf-blog__tile { position: relative; height: 320px; overflow: hidden; border-radius: 14px; background: var(--cream); }
 .sf-blog__tile-art { position: absolute; left: -240px; bottom: -60px; width: 900px; }
 .sf-blog__tile-photo { width: 100%; height: 100%; object-fit: cover; display: block; }
-.sf-blog__title { font: 34px/1.2 var(--font-display); color: var(--green); margin-bottom: 14px; }
+.sf-blog__title { font: 34px/1.2 var(--font-display); color: var(--green); margin: 0 0 14px; }
 .sf-blog__excerpt { font: 15px/1.75 var(--font-body); color: var(--green); margin: 0 0 18px; }
 .sf-blog__cta { font: 700 12px var(--font-body); letter-spacing: .2em; color: var(--paper); background: var(--red); padding: 11px 22px; border-radius: 999px; display: inline-block; }
 .sf-blog__more { border-top: 1px solid var(--rule); margin-top: 24px; padding-top: 16px; display: flex; flex-direction: column; gap: 10px; font: italic 15px var(--font-body); }
