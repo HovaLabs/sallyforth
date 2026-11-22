@@ -1,10 +1,11 @@
 import {Suspense} from 'react';
-import {Await, Link, NavLink, useAsyncValue} from 'react-router';
+import {Await, Link, useAsyncValue} from 'react-router';
 import {type CartViewPayload, useAnalytics, useOptimisticCart} from '@shopify/hydrogen';
 import type {CartApiQueryFragment} from 'storefrontapi.generated';
 import {useAside} from '~/components/Aside';
 import {SEARCH_ENDPOINT, SearchForm} from '~/components/SearchForm';
-import {ART, NAV_LINKS, SHOP} from '~/config/shop';
+import {ART, SHOP} from '~/config/shop';
+import {DesktopNav} from '~/components/DesktopNav';
 
 export function CartIcon() {
   return (
@@ -33,7 +34,7 @@ export function Header({cart}: {cart: Promise<CartApiQueryFragment | null>}) {
         <Link to="/" prefetch="intent" className="sf-nav__logo" aria-label={`${SHOP.name} home`}>
           <img src={ART.logoSmall} alt="" width="56" height="56" />
         </Link>
-        {/* Search bar fills the space between the logo and the nav links. Submitting navigates to /search. Hidden ≤900px, where the mobile menu carries its own searchbar. */}
+        {/* Search bar fills the space between the logo and the nav links. Submitting navigates to /search. Hidden ≤930px, where the mobile menu carries its own searchbar. */}
         <SearchForm action={SEARCH_ENDPOINT} role="search" className="sf-nav__search">
           {({inputRef}) => (
             <>
@@ -45,13 +46,7 @@ export function Header({cart}: {cart: Promise<CartApiQueryFragment | null>}) {
           )}
         </SearchForm>
         <div className="sf-nav__right">
-          <nav className="sf-nav__links" aria-label="Primary">
-            {NAV_LINKS.map((item) => (
-              <NavLink key={item.to} to={item.to} prefetch="intent" className="sf-pill sf-nav__pill">
-                {item.label}
-              </NavLink>
-            ))}
-          </nav>
+          <DesktopNav />
           <div className="sf-nav__icons">
             <CartToggle cart={cart} />
           </div>

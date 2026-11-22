@@ -2,6 +2,17 @@
 .sf-hero { position: relative; height: calc(100vh - 80px); min-height: 560px; overflow: hidden; background: var(--white); }
 .sf-hero__layer { position: absolute; pointer-events: none; will-change: transform; translate: -50% -50%; }
 .sf-hero__layer > img { display: block; width: 100%; height: auto; }
+/* Match the red ink behind transparent areas inside each bulb.
+   The backing rotates and scales with the illustration. */
+.sf-hero__layer > img[src$="/radish-a.webp"] {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 349'%3E%3Cpath fill='%23cc2438' d='M82 224 Q120 196 143 229 L158 253 Q161 278 144 296 L99 284 Z'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+}
+.sf-hero__layer > img[src$="/radish-b.webp"] {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 339'%3E%3Cpath fill='%23d72b3f' d='M240 249 Q245 210 282 202 Q306 199 322 218 L315 270 L263 289 Q241 278 240 249Z'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+}
+.sf-hero__layer > img[src$="/radish-c.webp"] {
+  background: radial-gradient(ellipse 7% 8% at 28% 66%, #de2e3e 98%, transparent 100%);
+}
 .sf-hero__text { position: absolute; inset: 0; z-index: 3; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; transform: translateY(100px); }
 .sf-hero__halo { background: radial-gradient(ellipse 52% 50% at 50% 50%, rgba(255,255,255,.9) 42%, rgba(255,255,255,.77) 62%, rgba(255,255,255,.44) 80%, rgba(255,255,255,0) 96%); padding: 110px 140px; }
 .sf-hero__eyebrow { font: 700 12px var(--font-body); letter-spacing: .34em; color: var(--green); margin-bottom: 20px; }

@@ -7,6 +7,7 @@ import {ART, SHOP} from '~/config/shop';
 import {blogPathForHandle} from '~/lib/blog';
 import {DEFAULT_BLOG_ART, blogConfig} from './blogConfig';
 import {formatDate} from './format';
+import {SweetPeaVine} from './SweetPeaVine';
 import {PostCard, postExcerpt} from './PostCard';
 
 type PrettyBlog = NonNullable<PrettyBlogQuery['blog']>;
@@ -17,6 +18,7 @@ type PrettyBlog = NonNullable<PrettyBlogQuery['blog']>;
  * cream band. Renders the data `loadBlogArticles` (app/lib/blog.tsx) returns.
  */
 export function BlogIndex({blog}: {blog: PrettyBlog}) {
+  const isAlmanac = blog.handle === SHOP.handles.almanac;
   const config = blogConfig(blog.handle);
   const basePath = blogPathForHandle(blog.handle);
   const title = config?.title ?? blog.title;
@@ -31,22 +33,28 @@ export function BlogIndex({blog}: {blog: PrettyBlog}) {
   const hasMore = nodes.length > 1 || blog.articles.pageInfo.hasNextPage;
 
   return (
-    <div className="sf-posts">
+    <div className={`sf-posts${isAlmanac ? ' sf-posts--almanac' : ''}`}>
       <section className="sf-posts__hero" aria-labelledby="sf-posts-title">
-        <img className="sf-art" src={ART[artA]} alt="" style={{left: -150, top: 30, width: 380, transform: 'rotate(-14deg)'}} />
-        <img className="sf-art" src={ART[artB]} alt="" style={{right: -130, top: 140, width: 320, transform: 'rotate(16deg)'}} />
+        {!isAlmanac && (
+          <>
+            <img className="sf-art" src={ART[artA]} alt="" style={{left: -150, top: 30, width: 380, transform: 'rotate(-14deg)'}} />
+            <img className="sf-art" src={ART[artB]} alt="" style={{right: -130, top: 140, width: 320, transform: 'rotate(16deg)'}} />
+          </>
+        )}
         <div className="sf-wrap">
           <div className="sf-posts__hero-text">
             <div className="sf-eyebrow">{SHOP.name}</div>
             <h1 id="sf-posts-title" className="sf-posts__title">{title}</h1>
             {config?.tagline ? <p className="sf-posts__tagline">{config.tagline}</p> : null}
+            {isAlmanac && <HeroPeaVine />}
           </div>
-          {featured ? <FeaturedPost post={featured} basePath={basePath} /> : <p className="sf-posts__empty">Nothing planted here yet.</p>}
+          {featured ? <FeaturedPost post={featured} basePath={basePath} wide={isAlmanac} /> : <p className="sf-posts__empty">Nothing planted here yet.</p>}
         </div>
       </section>
       {featured && hasMore ? (
         <section className="sf-posts__band" aria-labelledby="sf-posts-all">
           <WaveDivider variant="store" fill="cream" />
+          {isAlmanac ? <SweetPeaVine /> : null}
           <div className="sf-wrap sf-posts__list">
             <div className="sf-section-head">
               <span id="sf-posts-all" className="sf-section-title">All posts</span>
@@ -63,15 +71,33 @@ export function BlogIndex({blog}: {blog: PrettyBlog}) {
   );
 }
 
+function HeroPeaVine() {
+  return (
+    <svg className="sf-hero-pea" viewBox="0 0 340 68" aria-hidden="true" focusable="false">
+      <path className="sf-hero-pea__stem" pathLength="1" fill="none" stroke="#647745" strokeWidth="2.5" strokeLinecap="round"
+        d="M8 48 C43 56 48 24 80 32 S127 58 158 39 S199 15 228 30 S270 55 299 29 C321 8 336 15 329 25 C324 32 316 28 320 23" />
+      {[[55, 37, -20], [107, 42, 155], [158, 39, -22], [210, 24, 150], [272, 43, -28]].map(([x, y, angle], index) => (
+        <g key={x} transform={`translate(${x} ${y}) rotate(${angle})`}>
+          <g className="sf-hero-pea__leaves" style={{animationDelay: `${0.3 + index * 0.36}s`}}>
+            <path d="M0 0 Q-12 -4 -12 -16 Q0 -13 0 0" fill="#83965f" />
+            <path d="M0 0 Q0 -15 14 -20 Q15 -6 0 0" fill="#a1ad72" />
+            <path d="M0 0 L10 -15 M0 0 L-8 -11" fill="none" stroke="#647745" strokeWidth="1" />
+          </g>
+        </g>
+      ))}
+    </svg>
+  );
+}
+
 /** The home teaser's two-column card: image tile beside eyebrow, title, excerpt, CTA. */
-function FeaturedPost({post, basePath}: {post: PrettyArticleItemFragment; basePath: string}) {
+function FeaturedPost({post, basePath, wide = false}: {post: PrettyArticleItemFragment; basePath: string; wide?: boolean}) {
   const url = `${basePath}/${post.handle}`;
   const excerpt = postExcerpt(post, 200);
   return (
     <div className="sf-posts__featured">
       <Link to={url} className="sf-posts__tile" aria-hidden="true" tabIndex={-1}>
         {post.image ? (
-          <Image data={post.image} sizes="(min-width: 900px) 460px, 100vw" loading="eager" alt={post.image.altText || post.title} />
+          <Image data={post.image} sizes={wide ? '(min-width: 1350px) 1222px, 100vw' : '(min-width: 900px) 460px, 100vw'} loading="eager" alt={post.image.altText || post.title} />
         ) : (
           <img src={ART.blogTile} alt="" className="sf-posts__tile-art" />
         )}

@@ -53,7 +53,7 @@ export const ART = {
   blogTile: art('blog-tile.webp'),
   wordmarkScript: art('wordmark-script.svg'),
   wordmarkFooter: art('wordmark-footer.svg'),
-  logoSmall: art('logo-small.svg'),
+  logoSmall: art('nav-wax-seal.svg'),
 } as const;
 
 export type ArtKey = keyof typeof ART;

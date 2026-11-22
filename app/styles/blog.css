@@ -46,7 +46,7 @@
 .sf-article__hero { position: relative; z-index: 2; max-width: 1000px; margin: 32px auto 0; border-radius: 14px; overflow: hidden; background: var(--cream); }
 .sf-article__hero img { width: 100%; height: auto; display: block; }
 
-/* Reading column: site prose sizing, red Abril drop cap like the About story. */
+/* Reading column: site prose sizing, red Fraunces drop cap like the About story. */
 .sf-article__body { max-width: 720px; margin: 0 auto; padding: clamp(32px, 5vw, 56px) 0 8px; font: var(--prose-size)/var(--prose-leading) var(--font-body); text-wrap: pretty; }
 .sf-article__body > p:first-of-type::first-letter { float: left; font: 84px/.8 var(--font-display); margin: 8px 12px 0 0; color: var(--red); }
 .sf-article__body :where(p, ul, ol) { margin: 0 0 1.3em; }
@@ -63,3 +63,141 @@
 
 /* "More from the garden" — cream band of three other posts. */
 .sf-article__more { position: relative; background: var(--cream); padding: 56px 0 88px; }
+
+/* Almanac: one generous opening story, followed by alternating image/text rows. */
+.sf-posts--almanac .sf-posts__featured {
+  grid-template-columns: 1fr;
+  gap: 30px;
+}
+.sf-posts--almanac .sf-posts__tile {
+  height: auto;
+  aspect-ratio: 2 / 1;
+}
+.sf-posts--almanac .sf-posts__featured > div {
+  max-width: 760px;
+}
+.sf-posts--almanac .sf-posts__featured-title {
+  font-size: clamp(30px, 4vw, 48px);
+}
+.sf-posts--almanac .sf-posts__grid {
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(48px, 7vw, 88px);
+}
+.sf-posts--almanac .sf-post {
+  display: grid;
+  /* Image column is half the width it used to be (1/4 of the row vs 1/2) so the list scans faster. */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 3fr);
+  align-items: center;
+  column-gap: clamp(28px, 5vw, 72px);
+  background: transparent;
+  border-radius: 0;
+  overflow: visible;
+}
+.sf-posts--almanac .sf-post__img {
+  border-radius: 14px;
+}
+.sf-posts--almanac .sf-post:nth-child(even) {
+  grid-template-columns: minmax(0, 3fr) minmax(0, 1fr);
+}
+.sf-posts--almanac .sf-post:nth-child(even) .sf-post__img {
+  grid-column: 2;
+  grid-row: 1;
+}
+.sf-posts--almanac .sf-post:nth-child(even) .sf-post__body {
+  grid-column: 1;
+  grid-row: 1;
+}
+.sf-posts--almanac .sf-post__body {
+  min-width: 0;
+  padding: 0;
+  gap: 16px;
+}
+.sf-posts--almanac .sf-post__title {
+  font-size: clamp(26px, 3vw, 38px);
+}
+.sf-posts--almanac .sf-post__excerpt {
+  font-size: 16px;
+  -webkit-line-clamp: 4;
+}
+.sf-posts--almanac .sf-post__read {
+  margin-top: 4px;
+}
+@media (max-width: 700px) {
+  .sf-posts--almanac .sf-posts__tile { aspect-ratio: 3 / 2; }
+  .sf-posts--almanac .sf-post,
+  .sf-posts--almanac .sf-post:nth-child(even) { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .sf-posts--almanac .sf-post:nth-child(even) .sf-post__img,
+  .sf-posts--almanac .sf-post:nth-child(even) .sf-post__body {
+    grid-column: auto;
+    grid-row: auto;
+  }
+}
+
+/* Photos fill botanical silhouettes; retain real images for responsive loading. */
+.sf-posts--almanac .sf-post__img {
+  --botanical-mask: url('/art/masks/flower.svg');
+  aspect-ratio: 1;
+  width: 100%;
+  height: auto;
+  border-radius: 0;
+  -webkit-mask: var(--botanical-mask) center / contain no-repeat;
+  mask: var(--botanical-mask) center / contain no-repeat;
+}
+.sf-posts--almanac .sf-post:nth-child(3n + 1) .sf-post__img {
+  --botanical-mask: url('/art/masks/radish.svg');
+}
+.sf-posts--almanac .sf-post:nth-child(3n + 2) .sf-post__img {
+  --botanical-mask: url('/art/masks/eggplant.svg');
+}
+.sf-posts--almanac .sf-post__img img {
+  position: static;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+@media (max-width: 700px) {
+  /* Stacked rows: keep the silhouette at half width so the list stays scannable. */
+  .sf-posts--almanac .sf-post__img { width: 50%; justify-self: center; }
+}
+
+.sf-posts--almanac .sf-posts__band { --vine-width: clamp(54.08px, 8.45vw, 118.3px); }
+.sf-posts--almanac .sf-posts__list { padding-left: max(var(--pad-x), calc(var(--vine-width) + 8px)); }
+.sf-pea {
+  position: absolute;
+  inset-block: 0;
+  left: max(0px, calc((100% - var(--content-max)) / 2 - 12px));
+  width: var(--vine-width);
+  overflow: hidden;
+  pointer-events: none;
+  clip-path: inset(0 0 max(0px, calc(100% - var(--tip, 100%))) 0);
+}
+.sf-pea svg { display: block; width: 100%; }
+.sf-pea__shoot { transform: scale(var(--growth, 1)); }
+@media (prefers-reduced-motion: reduce) {
+  .sf-pea { clip-path: none; }
+  .sf-pea__shoot { transform: none; }
+}
+
+.sf-hero-pea {
+  display: block;
+  width: min(82%, 340px);
+  height: auto;
+  margin: 12px auto 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .sf-hero-pea__stem {
+    stroke-dasharray: 1;
+    animation: sf-hero-pea-grow 2.3s linear both;
+  }
+  .sf-hero-pea__leaves { animation: sf-hero-pea-unfurl .55s ease-out both; }
+}
+@keyframes sf-hero-pea-grow {
+  from { stroke-dashoffset: 1; }
+  to { stroke-dashoffset: 0; }
+}
+@keyframes sf-hero-pea-unfurl {
+  from { transform: scale(0) rotate(-15deg); }
+  to { transform: scale(1); }
+}
