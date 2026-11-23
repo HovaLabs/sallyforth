@@ -1,4 +1,16 @@
-import {expect, test} from '@playwright/test';
+import {expect, test, type Page} from '@playwright/test';
+
+function wreathRadii(page: Page) {
+  return page.locator('.sf-hero__wreath').evaluate((wreath) => {
+    const ring = wreath.getBoundingClientRect();
+    const centerX = ring.x + ring.width / 2;
+    const centerY = ring.y + ring.height / 2;
+    return Array.from(wreath.querySelectorAll('img'), (image) => {
+      const box = image.getBoundingClientRect();
+      return Math.round(Math.hypot(box.x + box.width / 2 - centerX, box.y + box.height / 2 - centerY));
+    });
+  });
+}
 
 test.describe('home', () => {
   test('renders hero, marquee, teaser, carousel, footer inside the frame', async ({page}) => {
@@ -7,10 +19,12 @@ test.describe('home', () => {
     await page.goto('/');
     await expect(page.locator('.sf-frame')).toBeVisible();
     await expect(page.locator('#hero')).toBeVisible();
-    const landscape = page.locator('.sf-hero__landscape');
-    await expect(landscape).toBeVisible();
-    await expect(landscape).toHaveJSProperty('complete', true);
-    expect(await landscape.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBeGreaterThan(0);
+    await expect(page.getByRole('heading', {name: 'SallyForth', level: 1})).toBeVisible();
+    const vegetables = page.locator('.sf-hero__wreath img');
+    await expect(vegetables.first()).toBeVisible();
+    await expect.poll(() => vegetables.evaluateAll((images) =>
+      images.every((img) => img instanceof HTMLImageElement && img.complete && img.naturalWidth > 0),
+    )).toBe(true);
     await expect(page.locator('#store')).toBeVisible();
     await expect(page.locator('.sf-footgrid')).toBeVisible();
     expect(errors).toEqual([]);
@@ -47,62 +61,42 @@ test.describe('home', () => {
     expect(await page.locator('#carousel').evaluate((el) => el.scrollLeft)).toBe(0);
   });
 
-  test('both cloud layers drift and respect reduced motion', async ({page}) => {
+  test('the vegetables spread away from the title on scroll and return at the top', async ({page}) => {
     await page.emulateMedia({reducedMotion: 'no-preference'});
     await page.goto('/');
-    const near = page.locator('.sf-hero__clouds--near');
-    const far = page.locator('.sf-hero__clouds--far');
-    for (const layer of [near, far]) {
-      await expect(layer).toBeVisible();
-      const position = () => layer.evaluate((el) => el.getBoundingClientRect().left);
-      const start = await position();
-      await expect.poll(position).not.toBe(start);
-    }
-
-    await page.emulateMedia({reducedMotion: 'reduce'});
-    for (const layer of [near, far]) {
-      await expect(layer).toBeVisible();
-      await expect(layer).toHaveCSS('animation-name', 'none');
-    }
-  });
-
-  test('the sunrise grows with scrolling and returns to its initial size at the top', async ({page}) => {
-    await page.goto('/');
-    const sun = page.locator('.sf-hero__sun-disc');
-    const diameter = () => sun.evaluate((el) => el.getBoundingClientRect().width);
-    await expect(sun).toBeVisible();
-    const initial = await diameter();
+    const initial = await wreathRadii(page);
+    const vegetable = page.locator('.sf-hero__wreath img').first();
+    const width = () => vegetable.evaluate((image) => image.getBoundingClientRect().width);
+    const initialWidth = await width();
 
     await page.evaluate(() => window.scrollTo(0, 100));
-    await expect.poll(diameter).toBeGreaterThan(initial);
-    const midway = await diameter();
+    await expect.poll(async () => (await wreathRadii(page)).every((r, i) => r > initial[i])).toBe(true);
+    const midway = await wreathRadii(page);
 
     await page.evaluate(() => window.scrollTo(0, 250));
-    await expect.poll(diameter).toBeGreaterThan(midway);
+    await expect.poll(async () => (await wreathRadii(page)).every((r, i) => r > midway[i])).toBe(true);
+    expect(await width()).toBeCloseTo(initialWidth, 1);
+    const expanded = await wreathRadii(page);
 
-    const hero = (await page.locator('#hero').boundingBox())!;
-    await page.evaluate((height) => window.scrollTo(0, height), hero.height);
-    await expect.poll(diameter).toBeCloseTo(initial * 2.1, 1);
-
-    await page.evaluate(() => window.scrollTo(0, 100));
-    await expect.poll(diameter).toBeCloseTo(midway, 1);
+    await page.emulateMedia({reducedMotion: 'reduce'});
+    await expect.poll(() => wreathRadii(page)).toEqual(initial);
+    await page.emulateMedia({reducedMotion: 'no-preference'});
+    await expect.poll(() => wreathRadii(page)).toEqual(expanded);
     await page.evaluate(() => window.scrollTo(0, 0));
-    await expect.poll(diameter).toBeCloseTo(initial, 1);
+    await expect.poll(() => wreathRadii(page)).toEqual(initial);
   });
 
-  test('reduced motion holds the sun still while the homepage navigation bar responds to scrolling', async ({page}) => {
+  test('reduced motion holds the wreath still while the homepage navigation bar responds to scrolling', async ({page}) => {
     await page.emulateMedia({reducedMotion: 'reduce'});
     await page.goto('/');
-    const sun = page.locator('.sf-hero__sun-disc');
     const nav = page.locator('.sf-nav');
     const transparent = 'rgba(0, 0, 0, 0)';
-    await expect(sun).toBeVisible();
-    const initial = await sun.evaluate((el) => el.getBoundingClientRect().width);
+    const initial = await wreathRadii(page);
     await expect(nav).toHaveCSS('background-color', transparent);
 
     await page.evaluate(() => window.scrollTo(0, 200));
     await expect(nav).not.toHaveCSS('background-color', transparent);
-    expect(await sun.evaluate((el) => el.getBoundingClientRect().width)).toBeCloseTo(initial, 1);
+    expect(await wreathRadii(page)).toEqual(initial);
     await page.evaluate(() => window.scrollTo(0, 0));
     await expect(nav).toHaveCSS('background-color', transparent);
   });

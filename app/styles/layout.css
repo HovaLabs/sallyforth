@@ -23,8 +23,11 @@
 /* Unscrolled home: the bar is transparent over the hero art, so give each link a
    white pill to stay legible. The highlighted link drops it so the sliding green
    highlight (which sits behind the links) shows through. */
-.sf-frame__inner:has(.sf-home .sf-hero:not([data-scrolled])) > .sf-header :is(.sf-nav__pill, .sf-nav__icon) {
+.sf-frame__inner:has(.sf-home .sf-hero:not([data-scrolled])) > .sf-header :is(.sf-nav__pill, .sf-nav__icon, .sf-burger) {
   background-color: var(--white);
+}
+.sf-frame__inner:has(.sf-home) > .sf-header .sf-burger {
+  width: 36px; height: 36px; align-items: center; justify-content: center; border-radius: 50%;
 }
 /* The searchbar matches: an opaque white fill against the art (elsewhere it's a faint green tint). */
 .sf-frame__inner:has(.sf-home .sf-hero:not([data-scrolled])) > .sf-header .sf-nav__search {
