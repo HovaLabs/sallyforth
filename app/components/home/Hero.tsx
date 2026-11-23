@@ -1,6 +1,7 @@
 import {useEffect, useRef} from 'react';
 import {ART, SHOP} from '~/config/shop';
 import {heroProgress} from '~/lib/parallax';
+import {wreathLayers} from './wreath';
 
 export function Hero() {
   const hero = useRef<HTMLElement>(null);
@@ -15,7 +16,7 @@ export function Hero() {
       const y = window.scrollY;
       el.toggleAttribute('data-scrolled', y > 12);
       const progress = reducedMotion.matches ? 0 : heroProgress(y, el.getBoundingClientRect().bottom + y);
-      el.style.setProperty('--sun-scale', String(1 + progress * 1.1));
+      el.style.setProperty('--wreath-scale', String(1 + progress * 0.8));
     };
     const schedule = () => {
       if (!frame) frame = requestAnimationFrame(update);
@@ -34,22 +35,31 @@ export function Hero() {
 
   return (
     <section id="hero" className="sf-hero" ref={hero} aria-label={SHOP.tagline}>
-      <div className="sf-hero__sky" aria-hidden="true">
-        <div className="sf-hero__clouds sf-hero__clouds--far" />
-        <div className="sf-hero__clouds sf-hero__clouds--near" />
-      </div>
-      <div className="sf-hero__garden" aria-hidden="true">
-        <div className="sf-hero__sun">
-          <img className="sf-hero__sun-disc" src="/art/hero-sun.webp" width={640} height={640} alt="" />
+      <div className="sf-hero__composition">
+        <div className="sf-hero__wreath" aria-hidden="true">
+          {wreathLayers.map(({name, pieces}) => (
+            <div key={name} className={`sf-hero__wreath-layer sf-hero__wreath-layer--${name}`}>
+              {pieces.map(({src, x, y, size, angle, stem}) => (
+                <img
+                  key={`${src}-${x}-${y}-${angle}`}
+                  src={src}
+                  alt=""
+                  data-stem={stem}
+                  style={{left: `${x}%`, top: `${y}%`, height: `${size}em`, rotate: `${angle}deg`}}
+                />
+              ))}
+            </div>
+          ))}
         </div>
-        <img className="sf-hero__landscape" src="/art/hero-sunrise-garden.webp" width={1983} height={793} alt="" loading="eager" fetchPriority="high" />
-      </div>
-      <div className="sf-hero__text">
-        <div className="sf-hero__eyebrow">ART · GARDENS · STORIES</div>
-        <div className="sf-hero__wordmark">
-          <h1><img src={ART.wordmarkScript} alt={SHOP.name} /></h1>
-          <img src={ART.snail} alt="" className="sf-hero__snail" />
-          <p className="sf-hero__tagline">Into the garden of creativity</p>
+        <div className="sf-hero__text">
+          <div className="sf-hero__eyebrow">ART · GARDENS · STORIES</div>
+          <div className="sf-hero__wordmark">
+            <h1>
+              <img className="sf-hero__signature" src={ART.wordmarkScript} width={1942} height={885} fetchPriority="high" alt={SHOP.name} />
+              <img src={ART.snail} alt="" className="sf-hero__snail" />
+            </h1>
+            <p className="sf-hero__tagline">Into the garden of creativity</p>
+          </div>
         </div>
       </div>
     </section>

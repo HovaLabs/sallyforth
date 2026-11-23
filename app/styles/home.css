@@ -1,119 +1,101 @@
-/* ---- Garden at sunrise ---- */
+/* ---- Vegetable wreath ---- */
 .sf-hero {
-  --garden-bottom: clamp(-12vw, calc(17% - 16.8vw), 0px);
+  --wreath-scale: 1;
+  --hero-paper: #fffdf3;
+  --top-gutter: clamp(54px, 8vw, 114px);
+  --bottom-gutter: clamp(55px, 9vw, 145px);
+  --nav-space: 88px;
+  --wave-space: 42px;
   position: relative;
   isolation: isolate;
-  height: calc(100svh - 80px);
-  min-height: max(580px, 34vw);
-  max-height: 1040px;
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  height: calc(max(360px, min(95svh, 80vw + 300px, 940px)) + var(--top-gutter) + var(--bottom-gutter));
+  padding: calc(var(--nav-space) + var(--top-gutter)) 0 calc(var(--wave-space) + var(--bottom-gutter));
   overflow: hidden;
-  padding: 0;
-  background: #fff0d7;
+  background: radial-gradient(ellipse at center, var(--hero-paper) 32%, #f7f7e9 71%, #eaf0df);
 }
-.sf-hero__sky {
+.sf-hero__composition {
+  position: relative;
+  display: grid;
+  place-items: center;
+  container-type: size;
+  width: min(95%, 1150px, max(320px, 200svh - 260px));
+  height: min(100%, 120vw, 650px);
+}
+.sf-hero__wreath {
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse at 55% 77%, #ffe1a5 0%, transparent 42%),
-    linear-gradient(to bottom, #e4eded, #fbefe0 38%, #ffdfbe 74%, #ffcf94);
-}
-.sf-hero__clouds {
-  --cloud-bank: url('/art/footer-cloud-bank.webp');
-  position: absolute;
-  inset: 6% auto 19% 0;
-  width: max(200%, 1080px);
-  display: flex;
   pointer-events: none;
+  /* Size the cutouts against both axes as the wide oval becomes taller on phones. */
+  font-size: calc(2 * min(1.26cqw, .75cqw + .44cqh));
+  transform: scale(var(--wreath-scale));
 }
-/* Two identical sky panels keep the pencil marks continuous when the loop wraps. */
-.sf-hero__clouds::before, .sf-hero__clouds::after {
-  content: "";
-  flex: 0 0 50%;
-  background-image: var(--clouds);
-  background-position: var(--positions);
-  background-size: var(--sizes);
-  background-repeat: no-repeat;
-}
-.sf-hero__clouds--far {
-  --clouds: var(--cloud-bank), var(--cloud-bank), var(--cloud-bank), var(--cloud-bank), var(--cloud-bank);
-  --positions: 32% 3%, right 19%, left 38%, 64% 62%, 15% 93%;
-  --sizes: 52% auto, 34% auto, 41% auto, 62% auto, 44% auto;
-  opacity: .27;
-}
-.sf-hero__clouds--near {
-  --clouds: var(--cloud-bank), var(--cloud-bank), var(--cloud-bank), var(--cloud-bank);
-  --positions: left 12%, 76% 39%, 12% 71%, right 96%;
-  --sizes: 42% auto, 70% auto, 58% auto, 50% auto;
-  opacity: .38;
-}
-@media (prefers-reduced-motion: no-preference) {
-  .sf-hero__clouds--far { animation: sf-hero-cloud-drift 210s linear infinite; }
-  .sf-hero__clouds--near { animation: sf-hero-cloud-drift 125s linear -28s infinite; }
-}
-@keyframes sf-hero-cloud-drift {
-  from { transform: translateX(-50%); }
-  to { transform: translateX(0); }
-}
-.sf-hero__garden {
+.sf-hero__wreath-layer {
   position: absolute;
-  left: 50%;
-  bottom: var(--garden-bottom);
-  width: max(100%, 740px);
-  aspect-ratio: 1983 / 793;
-  transform: translateX(-50%);
-  pointer-events: none;
+  inset: -2.7em -1.8em;
 }
-.sf-hero__landscape { position: relative; display: block; width: 100%; height: 100%; }
-.sf-hero__sun {
+.sf-hero__wreath-layer--outer {
+  /* A second band sits one full layer of produce outside the first. */
+  inset: -11.7em -10.8em;
+  rotate: 180deg;
+}
+.sf-hero__wreath img {
   position: absolute;
-  left: 55%;
-  top: 59%;
-  width: clamp(106px, 13vw, 216px);
-  aspect-ratio: 1;
-  transform: translate(-50%, -58%);
+  width: auto;
+  translate: -50% -50%;
+  /* Expanding the ring moves its centers outward. Keep the paintings at their inked size. */
+  scale: calc(1 / var(--wreath-scale));
 }
-.sf-hero__sun-disc { display: block; width: 100%; height: 100%; transform: scale(var(--sun-scale, 1)); }
+.sf-hero__wreath [data-stem="base"] {
+  translate: -50% -96%;
+  transform-origin: 50% 96%;
+}
+.sf-hero__wreath [data-stem="corner"] {
+  translate: -8% -90%;
+  transform-origin: 8% 90%;
+}
 .sf-hero__text {
-  --wordmark-width: min(76vw, max(760px, 53vw), 135svh);
-  position: absolute;
-  /* Center the signature while reserving space for the top navigation. */
-  top: max(102px, calc(50% - var(--wordmark-width) * .228 - 16px));
-  left: 50%;
-  transform: translateX(-50%);
-  width: var(--wordmark-width);
-  z-index: 3;
+  position: relative;
+  isolation: isolate;
+  width: clamp(54cqw, 46cqw + 16cqh, 70cqw);
   text-align: center;
 }
-.sf-hero__eyebrow { margin-bottom: 12px; font: 700 clamp(10px, 1vw, 14px) var(--font-body); letter-spacing: .34em; color: var(--green); }
+.sf-hero__text::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -12% -7%;
+  background: radial-gradient(ellipse closest-side, var(--hero-paper) 79%, transparent);
+}
+.sf-hero__eyebrow { margin-bottom: 12px; font: 700 clamp(11px, 1.2cqw, 14px) var(--font-body); letter-spacing: .34em; color: var(--green); }
 .sf-hero__wordmark { position: relative; }
-.sf-hero__wordmark h1 { margin: 0; }
-.sf-hero__wordmark h1 img { display: block; width: 100%; height: auto; }
-/* Rests on top of the h’s tail stroke (ink top ≈ 45–47% down the wordmark under the snail), sitting flat on the trough of the curve. */
+.sf-hero__wordmark h1 { position: relative; margin: 0; }
+.sf-hero__signature { display: block; width: 100%; height: auto; }
+/* Rests on top of the h’s tail stroke. */
 .sf-hero__snail { position: absolute; left: 83%; bottom: 53.6%; width: 6%; }
-/* The open area beneath “Forth” leaves the descending pen stroke clear. */
 .sf-hero__tagline {
   position: absolute;
   inset: 57% 13% auto 43%;
   margin: 0;
   color: #183e28;
-  font: italic 550 clamp(16px, 1.75vw, 28px)/1.3 var(--font-body);
+  font: italic 550 clamp(16px, 2.1cqw, 28px)/1.3 var(--font-body);
   text-wrap: balance;
 }
-@media (min-width: 701px) {
-  .sf-hero {
-    --garden-bottom: 0px;
-    height: 100svh;
-    min-height: max(640px, 49vw);
-  }
-  .sf-hero__text {
-    top: max(102px, calc(min(50svh, 520px) - var(--wordmark-width) * .228 - 56px));
-  }
-}
 @media (max-width: 700px) {
-  .sf-hero { height: 86svh; min-height: 550px; }
-  .sf-hero__garden { left: 0; transform: none; width: max(100%, min(170vw, 640px)); }
-  .sf-hero__sun { left: clamp(32%, 65vw, 55%); }
-  .sf-hero__text { --wordmark-width: min(94vw, 540px); }
+  .sf-hero { --nav-space: 82px; --wave-space: 38px; }
   .sf-hero__tagline { inset: 59% 4% auto 43%; }
+}
+@media (max-width: 480px) {
+  .sf-hero__wreath { inset: -1.1em -.9em; }
+  .sf-hero__eyebrow { letter-spacing: .2em; }
+  .sf-hero__tagline { position: static; margin: .4rem auto 0; }
+}
+@media (max-height: 480px) and (orientation: landscape) {
+  .sf-hero { --wave-space: 18px; }
+  .sf-hero__wreath { inset: -1.8em -.8em; }
+  .sf-hero__eyebrow { margin-bottom: 6px; letter-spacing: .16em; }
 }
 
 /* ---- Marquee ---- */
